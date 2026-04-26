@@ -12,8 +12,7 @@ private:
     std::vector<std::shared_ptr<Game>> pvpGames;
     std::unique_ptr<IDatabase> db;
 
-    int selectedGroup; // 0 for Solo, 1 for PvP
-    int selectedGameIndex;
+    int selectedIndex;
     bool running;
 
     void renderFrame();
