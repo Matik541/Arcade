@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Arcade.cpp" />
-    <ClCompile Include="DataBase.cpp" />
+    <ClCompile Include="Database.cpp" />
     <ClCompile Include="Game2048.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Display.cpp" />
@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arcade.h" />
-    <ClInclude Include="DataBase.h" />
+    <ClInclude Include="Database.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Game2048.h" />

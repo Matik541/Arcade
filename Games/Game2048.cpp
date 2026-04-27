@@ -1,5 +1,5 @@
 #include "Game2048.h"
-#include "Display.h"
+#include "../Display.h"
 #include <iostream>
 
 Game2048::Game2048() : Game("2048", "Classic sliding puzzle game. Combine tiles to reach 2048!", false) {}

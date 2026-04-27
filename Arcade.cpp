@@ -3,21 +3,26 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include <conio.h> 
+#include "Input.h"
 
- #include "TicTacToe.h"
- #include "Minesweeper.h"
- #include "Game2048.h"
+ #include "Games/TicTacToe.h"
+ #include "Games/MineSweeper.h"
+ #include "Games/Game2048.h"
 
 Arcade::Arcade() {
     running = true;
     selectedIndex = 0; 
     db = std::make_unique<MockDatabase>();
 
-     soloGames.push_back(std::make_shared<MineSweeper>());
-     soloGames.push_back(std::make_shared<Game2048>());
+    auto ms = std::make_shared<MineSweeper>();
+    auto g2048 = std::make_shared<Game2048>();
 
-     pvpGames.push_back(std::make_shared<TicTacToe>());
+    ms->setDatabase(db.get());
+
+    soloGames.push_back(g2048);
+    soloGames.push_back(ms);
+
+    pvpGames.push_back(std::make_shared<TicTacToe>());
 	 //pvpGames.push_back(std::make_shared<NIM>()); 
 }
 
@@ -25,7 +30,6 @@ void Arcade::renderFrame() {
     Display::clearScreen();
     Display::printColored("=== ARCADE MACHINE ===\n\n", Color::YELLOW);
 
-    // 1. Determine which game is currently selected
     std::shared_ptr<Game> currentGame;
     if (selectedIndex < soloGames.size()) {
         currentGame = soloGames[selectedIndex];
@@ -124,7 +128,7 @@ void Arcade::handleInput() {
             selectedIndex = 0;
         }
     }
-    else if (input == '\r' || input == 'P') {
+    else if (input == '\r' || input == '\n' || input == ' ' || input == 'P') {
         if (selectedIndex < soloGames.size()) {
             soloGames[selectedIndex]->play();
         }
