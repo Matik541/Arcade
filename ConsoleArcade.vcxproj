@@ -140,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Arcade.cpp" />
+    <ClCompile Include="Battleship.cpp" />
+    <ClCompile Include="Blackjask.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Game2048.cpp" />
     <ClCompile Include="main.cpp" />
@@ -149,6 +151,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arcade.h" />
+    <ClInclude Include="Battleship.h" />
+    <ClInclude Include="Blackjack.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Game.h" />

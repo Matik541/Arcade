@@ -1,6 +1,6 @@
 #include "TicTacToe.h"
-#include "../Display.h"
-#include "../Input.h"
+#include "Display.h"
+#include "Input.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -126,7 +126,7 @@ void TicTacToe::drawBoard() {
         }
 
         if (i % 3 != 2) std::cout << "|";
-        else if (i != 8) std::cout << "\n---+---+---\n";
+        else if (i != 8) std::cout << "\n — + — + — \n";
     }
     std::cout << "\n\n";
 }

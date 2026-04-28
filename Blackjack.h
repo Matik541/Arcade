@@ -1,7 +1,7 @@
 #ifndef BLACKJACK_H
 #define BLACKJACK_H
 
-#include "../Game.h"
+#include "Game.h"
 #include <vector>
 #include <string>
 

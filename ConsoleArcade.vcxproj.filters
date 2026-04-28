@@ -42,6 +42,12 @@
     <ClCompile Include="Arcade.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="Blackjask.cpp">
+      <Filter>Pliki źródłowe\Games</Filter>
+    </ClCompile>
+    <ClCompile Include="Battleship.cpp">
+      <Filter>Pliki źródłowe\Games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Display.h">
@@ -64,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="Arcade.h">
       <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Blackjack.h">
+      <Filter>Pliki nagłówkowe\Games</Filter>
+    </ClInclude>
+    <ClInclude Include="Battleship.h">
+      <Filter>Pliki nagłówkowe\Games</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

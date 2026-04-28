@@ -1,7 +1,7 @@
 #ifndef GAME2048_H
 #define GAME2048_H
 
-#include "../Game.h"
+#include "Game.h"
 #include <vector>
 
 class Game2048 : public Game {

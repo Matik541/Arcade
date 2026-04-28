@@ -1,6 +1,6 @@
 #include "Blackjack.h"
-#include "../Display.h"
-#include "../Input.h"
+#include "Display.h"
+#include "Input.h"
 #include <iostream>
 #include <algorithm>
 #include <random>

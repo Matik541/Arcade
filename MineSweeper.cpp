@@ -1,6 +1,6 @@
 #include "MineSweeper.h"
-#include "../Display.h"
-#include "../Input.h"
+#include "Display.h"
+#include "Input.h"
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>

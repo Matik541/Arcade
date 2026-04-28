@@ -5,19 +5,22 @@
 #include <algorithm>
 #include "Input.h"
 
- #include "Games/TicTacToe.h"
- #include "Games/MineSweeper.h"
- #include "Games/Game2048.h"
- #include "Games/Blackjack.h"
+#include "TicTacToe.h"
+#include "MineSweeper.h"
+#include "Game2048.h"
+#include "Blackjack.h"
+#include "Battleship.h"
 
 Arcade::Arcade() {
     running = true;
     selectedIndex = 0; 
     db = std::make_unique<FileDatabase>("scores.txt");
 
+    auto ttt = std::make_shared<TicTacToe>();
     auto ms = std::make_shared<MineSweeper>();
     auto g2048 = std::make_shared<Game2048>();
     auto bj = std::make_shared<Blackjack>();
+    auto bs = std::make_shared<Battleship>();
 
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
@@ -27,7 +30,8 @@ Arcade::Arcade() {
     soloGames.push_back(g2048);
     soloGames.push_back(bj);
 
-    pvpGames.push_back(std::make_shared<TicTacToe>());
+    pvpGames.push_back(ttt);
+    pvpGames.push_back(bs);
 	 //pvpGames.push_back(std::make_shared<NIM>()); 
 }
 

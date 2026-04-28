@@ -1,7 +1,7 @@
 #ifndef TICTACTOE_H
 #define TICTACTOE_H
 
-#include "../Game.h"
+#include "Game.h"
 #include <vector>
 
 class TicTacToe : public Game {

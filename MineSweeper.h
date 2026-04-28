@@ -1,7 +1,7 @@
 #ifndef MINESWEEPER_H
 #define MINESWEEPER_H
 
-#include "../Game.h"
+#include "Game.h"
 #include <vector>
 #include <ctime>
 

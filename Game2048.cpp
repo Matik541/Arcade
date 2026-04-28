@@ -1,6 +1,6 @@
 #include "Game2048.h"
-#include "../Display.h"
-#include "../Input.h"
+#include "Display.h"
+#include "Input.h"
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
@@ -150,7 +150,7 @@ void Game2048::drawBoard(bool gameOver) {
 
     // Dynamic Top Border
     std::cout << "+";
-    for(int i=0; i<size; i++) std::cout << "------+";
+    for(int i=0; i<size; i++) std::cout << " ———— +";
     std::cout << "\n";
 
     for (int y = 0; y < size; y++) {
