@@ -4,27 +4,32 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <algorithm>
 
 struct ScoreEntry {
     std::string playerName;
     int score;
 };
 
-// Abstract Base Class (Interface)
+// The Interface (Contract)
 class IDatabase {
 public:
     virtual ~IDatabase() = default;
-    virtual std::vector<ScoreEntry> getTop5(const std::string& gameName) = 0;
-    virtual void saveScore(const std::string& gameName, const std::string& player, int score) = 0;
+    // Both functions now take the sorting rule
+    virtual std::vector<ScoreEntry> getTop5(const std::string& gameName, bool higherIsBetter) = 0;
+    virtual void saveScore(const std::string& gameName, const std::string& player, int score, bool higherIsBetter) = 0;
 };
 
-class MockDatabase : public IDatabase {
+// The Local File Implementation
+class FileDatabase : public IDatabase {
 private:
-    std::map<std::string, std::vector<ScoreEntry>> memoryDb;
+    std::string filename;
+    std::map<std::string, std::vector<ScoreEntry>> loadAllScores();
+    void saveAllScores(const std::map<std::string, std::vector<ScoreEntry>>& allData);
+
 public:
-    std::vector<ScoreEntry> getTop5(const std::string& gameName) override;
-    void saveScore(const std::string& gameName, const std::string& player, int score) override;
+    FileDatabase(std::string file = "scores.txt");
+    std::vector<ScoreEntry> getTop5(const std::string& gameName, bool higherIsBetter) override;
+    void saveScore(const std::string& gameName, const std::string& player, int score, bool higherIsBetter) override;
 };
 
 #endif

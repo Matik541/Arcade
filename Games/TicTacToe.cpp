@@ -253,7 +253,17 @@ void TicTacToe::play() {
                 std::cout << "Player " << currentPlayer << ", select a spot (1-9): ";
                 
                 char input = toupper(_getch());
-                if (input == 'Q') return; 
+                if (input == 'Q') {
+                std::cout << "\nAre you sure you want to quit to menu? (Y/N): ";
+                bool confirmQuit = false;
+                while (true) {
+                    int ans = getInput();
+                    if (ans == 'Y') { confirmQuit = true; break; }
+                    if (ans == 'N') { break; }
+                }
+                if (confirmQuit) return;
+                continue; // Skips the rest of the turn and redraws the board
+            } 
 
                 int move = input - '1'; 
 

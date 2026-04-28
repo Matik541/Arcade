@@ -9,13 +9,13 @@ class MineSweeper : public Game {
 private:
     int width, height, numMines;
     int cursorX, cursorY;
-    int difficulty;
+    int difficulty; 
     bool firstClick;
     time_t startTime;
 
     std::vector<std::vector<int>> board; 
     std::vector<std::vector<bool>> revealed;
-    std::vector<std::vector<bool>> flagged;
+    std::vector<std::vector<int>> cellState; // 0=Normal, 1=Flag, 2=Question
 
     bool setupOptions();
     void resetBoard();
@@ -23,6 +23,7 @@ private:
     void calculateNumbers();
     void drawBoard(bool gameOver, bool isWin);
     void revealCell(int x, int y);
+    bool chordCell(int x, int y);
     bool checkWin();
 
 public:

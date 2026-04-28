@@ -9,10 +9,11 @@ protected:
     std::string name;
     std::string description;
     bool hasScoreboard;
+    bool higherIsBetter;
     IDatabase* db; 
 
 public:
-    Game(std::string n, std::string desc, bool sc) : name(n), description(desc), hasScoreboard(sc), db(nullptr) {}
+    Game(std::string n, std::string desc, bool sc, bool hib = true) : name(n), description(desc), hasScoreboard(sc), higherIsBetter(hib), db(nullptr) {}
     virtual ~Game() = default;
 
     virtual void play() = 0; 
@@ -22,6 +23,7 @@ public:
     std::string getName() const { return name; }
     std::string getDescription() const { return description; }
     bool usesScoreboard() const { return hasScoreboard; }
+    bool isHigherBetter() const { return higherIsBetter; }
 };
 
 #endif

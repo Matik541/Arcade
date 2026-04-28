@@ -4,41 +4,54 @@
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>
+#include <cmath>
 
-MineSweeper::MineSweeper() : Game("MineSweeper", "Find all the mines without triggering them!", true) {
+MineSweeper::MineSweeper() : Game("MineSweeper", "Find all the mines without triggering them!", true, false) {
     srand(static_cast<unsigned int>(time(0)));
 }
 
 bool MineSweeper::setupOptions() {
-    Display::clearScreen();
-    Display::printColored("--- MineSweeper SETUP ---\n\n", Color::YELLOW);
-    std::cout << "[1] Beginner (9x9, 10 Mines)\n";
-    Display::printColored("[2] Intermediate (16x16, 40 Mines) <- DEFAULT & SCORED\n", Color::CYAN);
-    std::cout << "[3] Expert (30x16, 99 Mines)\n";
-    std::cout << "[4] Custom\n";
-    std::cout << "[Q] Quit to Menu\n\n> ";
+    int selected = 1; 
+    std::string options[] = {
+        "Beginner (9x9, 10 Mines)",
+        "Intermediate (16x16, 40 Mines) <- DEFAULT & SCORED",
+        "Expert (30x16, 99 Mines)",
+        "Custom"
+    };
 
     while (true) {
-        char input = toupper(_getch());
-        if (input == 'Q') return false;
+        Display::clearScreen();
+        Display::printColored("--- MINESWEEPER SETUP ---\n\n", Color::YELLOW);
         
-        // 2 is Default, or if they explicitly press 2
-        if (input == '2' || input == '\r' || input == '\n' || input == ' ') {
-            width = 16; height = 16; numMines = 40; difficulty = 2; break;
-        } else if (input == '1') {
-            width = 9; height = 9; numMines = 10; difficulty = 1; break;
-        } else if (input == '3') {
-            width = 30; height = 16; numMines = 99; difficulty = 3; break;
-        } else if (input == '4') {
-            difficulty = 4;
-            std::cout << "\nWidth (min 5, max 30): "; std::cin >> width;
-            std::cout << "Height (min 5, max 20): "; std::cin >> height;
-            std::cout << "Mines: "; std::cin >> numMines;
-            // Catch edge cases
-            if(width < 5) width = 5; if(width > 30) width = 30;
-            if(height < 5) height = 5; if(height > 20) height = 20;
-            if(numMines >= width * height) numMines = (width * height) - 1;
-            break;
+        for (int i = 0; i < 4; i++) {
+            if (i == selected) {
+                Display::printColored("> " + options[i] + "\n", Color::GREEN);
+            } else {
+                std::cout << "  " << options[i] << "\n";
+            }
+        }
+        
+        std::cout << "\n[W/S] Navigate | [SPACE/ENTER] Select | [Q] Quit\n> ";
+
+        int input = getInput(); 
+        if (input == 'Q') return false;
+        if (input == 'W' && selected > 0) selected--;
+        if (input == 'S' && selected < 3) selected++;
+        
+        if (input == ' ' || input == '\r' || input == '\n') {
+            if (selected == 0) { width = 9; height = 9; numMines = 10; difficulty = 1; break; }
+            if (selected == 1) { width = 16; height = 16; numMines = 40; difficulty = 2; break; }
+            if (selected == 2) { width = 30; height = 16; numMines = 99; difficulty = 3; break; }
+            if (selected == 3) { 
+                difficulty = 4;
+                std::cout << "\nWidth (min 5, max 30): "; std::cin >> width;
+                std::cout << "Height (min 5, max 20): "; std::cin >> height;
+                std::cout << "Mines: "; std::cin >> numMines;
+                if(width < 5) width = 5; if(width > 30) width = 30;
+                if(height < 5) height = 5; if(height > 20) height = 20;
+                if(numMines >= width * height) numMines = (width * height) - 9; // Leave room for safe opening
+                break; 
+            }
         }
     }
     return true;
@@ -47,23 +60,31 @@ bool MineSweeper::setupOptions() {
 void MineSweeper::resetBoard() {
     board.assign(height, std::vector<int>(width, 0));
     revealed.assign(height, std::vector<bool>(width, false));
-    flagged.assign(height, std::vector<bool>(width, false));
+    cellState.assign(height, std::vector<int>(width, 0)); // 0 = Hidden
     cursorX = 0;
     cursorY = 0;
     firstClick = true;
-    srand(0); // testing 
 }
 
 void MineSweeper::placeMines(int safeX, int safeY) {
     int minesPlaced = 0;
+    int attempts = 0;
+    
     while (minesPlaced < numMines) {
         int rX = rand() % width;
         int rY = rand() % height;
-        // Don't place a mine on the first clicked cell, or where one already exists
-        if (board[rY][rX] != -1 && (rX != safeX || rY != safeY)) {
+        
+        // Ensure a 3x3 safe zone around the first click so it opens up nicely
+        bool isSafeZone = (std::abs(rX - safeX) <= 1 && std::abs(rY - safeY) <= 1);
+        
+        // Fallback if the board is incredibly dense with mines and we get stuck
+        if (attempts > 1000) isSafeZone = (rX == safeX && rY == safeY);
+
+        if (board[rY][rX] != -1 && !isSafeZone) {
             board[rY][rX] = -1;
             minesPlaced++;
         }
+        attempts++;
     }
 }
 
@@ -72,7 +93,6 @@ void MineSweeper::calculateNumbers() {
         for (int x = 0; x < width; x++) {
             if (board[y][x] == -1) continue;
             int count = 0;
-            // Check all 8 neighbors
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dx = -1; dx <= 1; dx++) {
                     int ny = y + dy, nx = x + dx;
@@ -88,56 +108,50 @@ void MineSweeper::calculateNumbers() {
 
 void MineSweeper::drawBoard(bool gameOver, bool isWin) {
     Display::clearScreen();
-    Display::printColored("=== MineSweeper ===\n\n", Color::YELLOW);
+    Display::printColored("=== MINESWEEPER ===\n\n", Color::YELLOW);
     
     int flagsLeft = numMines;
-    for(auto& row : flagged) for(bool f : row) if(f) flagsLeft--;
+    for(auto& row : cellState) for(int state : row) if(state == 1) flagsLeft--;
 
     std::cout << "Mines: " << numMines << " | Flags left: " << flagsLeft;
-    if (!firstClick && !gameOver) {
-        std::cout << " | Time: " << (time(0) - startTime) << "s";
-    }
-    std::cout << "\n\n";
+    if (!firstClick && !gameOver) std::cout << " | Time: " << (time(0) - startTime) << "s";
+    std::cout << "\n[WASD] Move | [SPACE] Reveal/Chord | [F] Flag/? | [Q] Quit\n\n";
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            // Draw Cursor
             if (x == cursorX && y == cursorY && !gameOver) Display::printColored("[", Color::CYAN);
             else std::cout << " ";
 
-            // Draw Cell Contents
             if (revealed[y][x] || gameOver) {
                 if (board[y][x] == -1) {
                     Display::printColored(isWin ? "X" : "*", isWin ? Color::GREEN : Color::RED);
                 } else if (board[y][x] == 0) {
-                    std::cout << ".";
+                    std::cout << " ";
                 } else {
-                    // Color code numbers
                     std::string colors[] = {Color::RESET, Color::BLUE, Color::GREEN, Color::RED, Color::MAGENTA, Color::CYAN, Color::YELLOW, Color::RESET, Color::RESET};
                     Display::printColored(std::to_string(board[y][x]), colors[board[y][x]]);
                 }
-            } else if (flagged[y][x]) {
+            } else if (cellState[y][x] == 1) { // Flag
                 Display::printColored("F", Color::YELLOW);
+            } else if (cellState[y][x] == 2) { // Question Mark
+                Display::printColored("?", Color::CYAN);
             } else {
                 std::cout << "#";
             }
 
-            // Draw Cursor End
             if (x == cursorX && y == cursorY && !gameOver) Display::printColored("]", Color::CYAN);
             else std::cout << " ";
         }
         std::cout << "\n";
     }
-
-    std::cout << "\n[W/A/S/D] Move | [SPACE] Reveal | [F] Flag | [Q] Quit\n\n";
+    std::cout << "\n";
 }
 
 void MineSweeper::revealCell(int x, int y) {
-    if (x < 0 || x >= width || y < 0 || y >= height || revealed[y][x] || flagged[y][x]) return;
+    if (x < 0 || x >= width || y < 0 || y >= height || revealed[y][x] || cellState[y][x] == 1) return;
     
     revealed[y][x] = true;
 
-    // Flood fill if it's an empty space
     if (board[y][x] == 0) {
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -145,6 +159,35 @@ void MineSweeper::revealCell(int x, int y) {
             }
         }
     }
+}
+
+// NEW: Opens surrounding cells if flag count matches number
+bool MineSweeper::chordCell(int x, int y) {
+    int flagCount = 0;
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            int ny = y + dy, nx = x + dx;
+            if (ny >= 0 && ny < height && nx >= 0 && nx < width && cellState[ny][nx] == 1) {
+                flagCount++;
+            }
+        }
+    }
+
+    // If flags match the number, reveal everything else
+    if (flagCount == board[y][x]) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int ny = y + dy, nx = x + dx;
+                if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                    if (!revealed[ny][nx] && cellState[ny][nx] != 1) {
+                        if (board[ny][nx] == -1) return false; // Hit a mine!
+                        revealCell(nx, ny);
+                    }
+                }
+            }
+        }
+    }
+    return true; // Safe
 }
 
 bool MineSweeper::checkWin() {
@@ -170,25 +213,43 @@ void MineSweeper::play() {
         while (gameRunning) {
             drawBoard(false, false);
 
-            char input = toupper(_getch());
-            if (input == 'Q') return;
+            int input = getInput();
+            if (input == 'Q') {
+                std::cout << "\nAre you sure you want to quit to menu? (Y/N): ";
+                bool confirmQuit = false;
+                while (true) {
+                    int ans = getInput();
+                    if (ans == 'Y') { confirmQuit = true; break; }
+                    if (ans == 'N') { break; }
+                }
+                if (confirmQuit) return;
+                continue; // Skips the rest of the turn and redraws the board
+            }
             
-            // Cursor Movement
             if (input == 'W' && cursorY > 0) cursorY--;
             if (input == 'S' && cursorY < height - 1) cursorY++;
             if (input == 'A' && cursorX > 0) cursorX--;
             if (input == 'D' && cursorX < width - 1) cursorX++;
 
-            // Flagging
-            if (input == 'F') {
-                if (!revealed[cursorY][cursorX]) {
-                    flagged[cursorY][cursorX] = !flagged[cursorY][cursorX];
-                }
+            // Cycle: Hidden (0) -> Flag (1) -> Question (2) -> Hidden (0)
+            if (input == 'F' && !revealed[cursorY][cursorX]) {
+                cellState[cursorY][cursorX] = (cellState[cursorY][cursorX] + 1) % 3;
             }
 
-            // Revealing
             if (input == ' ' || input == '\r' || input == '\n') {
-                if (flagged[cursorY][cursorX]) continue; // Protect flagged cells
+                if (cellState[cursorY][cursorX] == 1) continue; 
+
+                // CHORDING logic
+                if (revealed[cursorY][cursorX] && board[cursorY][cursorX] > 0) {
+                    if (!chordCell(cursorX, cursorY)) {
+                        gameRunning = false;
+                        isWin = false;
+                    } else if (checkWin()) {
+                        gameRunning = false;
+                        isWin = true;
+                    }
+                    continue; 
+                }
 
                 if (firstClick) {
                     placeMines(cursorX, cursorY);
@@ -197,20 +258,21 @@ void MineSweeper::play() {
                     firstClick = false;
                 }
 
-                if (board[cursorY][cursorX] == -1) { // Hit a mine!
-                    gameRunning = false;
-                    isWin = false;
-                } else {
-                    revealCell(cursorX, cursorY);
-                    if (checkWin()) {
+                if (!revealed[cursorY][cursorX]) {
+                    if (board[cursorY][cursorX] == -1) { 
                         gameRunning = false;
-                        isWin = true;
+                        isWin = false;
+                    } else {
+                        revealCell(cursorX, cursorY);
+                        if (checkWin()) {
+                            gameRunning = false;
+                            isWin = true;
+                        }
                     }
                 }
             }
         }
 
-        // --- END OF MATCH LOGIC ---
         drawBoard(true, isWin); 
 
         if (isWin) {
@@ -221,22 +283,20 @@ void MineSweeper::play() {
                 std::cout << "NEW RECORD! Enter your name (no spaces): ";
                 std::string playerName;
                 std::cin >> playerName;
-                db->saveScore(name, playerName, timeTaken);
+                db->saveScore(name, playerName, timeTaken, isHigherBetter());
                 Display::printColored("Score Saved!\n\n", Color::GREEN);
-                
-                while((getchar()) != '\n');
+                while((getchar()) != '\n'); 
             }
         } else {
             Display::printColored("BOOM! You hit a mine. Game Over.\n\n", Color::RED);
         }
 
-        // Post-Game Menu
         std::cout << "[1] Play Again (Same Settings)\n";
         std::cout << "[2] Change Settings\n";
         std::cout << "[Q] Quit to Main Menu\n\n> ";
 
         while (true) {
-            char choice = toupper(_getch());
+            int choice = getInput();
             if (choice == '1') { skipSetup = true; break; }
             if (choice == '2') { skipSetup = false; break; }
             if (choice == 'Q') { return; }

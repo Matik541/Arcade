@@ -12,12 +12,13 @@
 Arcade::Arcade() {
     running = true;
     selectedIndex = 0; 
-    db = std::make_unique<MockDatabase>();
+    db = std::make_unique<FileDatabase>("scores.txt");
 
     auto ms = std::make_shared<MineSweeper>();
     auto g2048 = std::make_shared<Game2048>();
 
     ms->setDatabase(db.get());
+    g2048->setDatabase(db.get());
 
     soloGames.push_back(g2048);
     soloGames.push_back(ms);
@@ -48,7 +49,7 @@ void Arcade::renderFrame() {
         leftMenu.push_back((selectedIndex == i ? "> " : "  ") + soloGames[i]->getName());
     }
 
-    leftMenu.push_back(""); // Empty line for spacing
+    leftMenu.push_back(""); 
     leftMenu.push_back("[ PvP / PvB ]");
     for (size_t i = 0; i < pvpGames.size(); ++i) {
         int globalIndex = i + soloGames.size();
@@ -58,7 +59,7 @@ void Arcade::renderFrame() {
     // 3. Build the Right Scoreboard dynamically
     std::vector<std::string> rightScores;
     if (currentGame->usesScoreboard()) {
-        auto scores = db->getTop5(currentGame->getName());
+        auto scores = db->getTop5(currentGame->getName(), currentGame->isHigherBetter());
         for (int i = 0; i < 5; ++i) {
             if (i < scores.size()) {
                 rightScores.push_back(std::to_string(i + 1) + ". " + scores[i].playerName + " - " + std::to_string(scores[i].score));
@@ -103,8 +104,7 @@ void Arcade::renderFrame() {
 }
 
 void Arcade::handleInput() {
-    char input = _getch();
-    input = toupper(input);
+    int input = getInput();
 
     int totalGames = soloGames.size() + pvpGames.size();
 
