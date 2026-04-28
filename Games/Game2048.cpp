@@ -32,7 +32,7 @@ bool Game2048::setupOptions() {
             else std::cout << "  " << options[i] << "\n";
         }
         
-        std::cout << "\n[W/S] Navigate | [SPACE/ENTER] Select | [Q] Quit\n> ";
+        std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
 
         int input = getInput(); 
         if (input == 'Q') return false;
@@ -241,15 +241,35 @@ void Game2048::play() {
             while((getchar()) != '\n'); 
         }
 
-        std::cout << "[1] Play Again (Same Settings)\n";
-        std::cout << "[2] Change Settings\n";
-        std::cout << "[Q] Quit to Main Menu\n\n> ";
+// NEW INTERACTIVE MENU
+        int endSel = 0;
+        std::string endOpts[] = {
+            "Play Again (Same Setup)",
+            "Change Setup",
+            "Quit to Main Menu"
+        };
 
-        while (true) {
+        bool madeChoice = false; 
+        
+        while (!madeChoice) {
+            Display::clearScreen();
+            drawBoard(true); 
+
+            std::cout << "\n--- POST GAME ---\n";
+            for (int i = 0; i < 3; i++) {
+                if (i == endSel) Display::printColored("> " + endOpts[i] + "\n", Color::GREEN);
+                else std::cout << "  " << endOpts[i] << "\n";
+            }
+            std::cout << "\n[W/S] Navigate | [SPACE] Select\n> ";
+
             int choice = getInput();
-            if (choice == '1') { skipSetup = true; break; }
-            if (choice == '2') { skipSetup = false; break; }
-            if (choice == 'Q') { return; }
+            if (choice == 'W' && endSel > 0) endSel--;
+            if (choice == 'S' && endSel < 2) endSel++;
+            if (choice == ' ' || choice == '\r' || choice == '\n') {
+                if (endSel == 0) { skipSetup = true; madeChoice = true; }
+                if (endSel == 1) { skipSetup = false; madeChoice = true; }
+                if (endSel == 2) { return; }
+            }
         }
     }
 }

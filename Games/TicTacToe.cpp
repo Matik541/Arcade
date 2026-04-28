@@ -15,59 +15,87 @@ void TicTacToe::resetBoard() {
     currentPlayer = 'X'; 
 }
 
+// 1. Fully Interactive Setup Menus
 bool TicTacToe::setupOptions() {
-    Display::clearScreen();
-    Display::printColored("--- TIC-TAC-TOE SETUP ---\n\n", Color::YELLOW);
-    std::cout << "Choose Game Mode:\n";
-    std::cout << "[1] Player vs Player\n";
-    std::cout << "[2] Player vs BOT\n";
-    std::cout << "[Q] Quit to Menu\n\n> ";
-
+    // --- MODE SELECTION ---
+    int sel = 0;
+    std::string modes[] = {"Player vs Player", "Player vs BOT"};
+    
     while (true) {
-        char input = toupper(_getch());
-        if (input == 'Q') return false;
-        if (input == '1') {
-            vsBot = false;
-            break;
+        Display::clearScreen();
+        Display::printColored("--- TIC-TAC-TOE SETUP ---\n\n", Color::YELLOW);
+        std::cout << "Choose Game Mode:\n";
+        
+        for (int i = 0; i < 2; i++) {
+            if (i == sel) Display::printColored("> " + modes[i] + "\n", Color::GREEN);
+            else std::cout << "  " + modes[i] << "\n";
         }
-        if (input == '2') {
-            vsBot = true;
+        std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
+
+        int input = getInput();
+        if (input == 'Q') return false;
+        if (input == 'W' && sel > 0) sel--;
+        if (input == 'S' && sel < 1) sel++;
+        if (input == ' ' || input == '\r' || input == '\n') {
+            vsBot = (sel == 1);
             break;
         }
     }
 
+    // --- BOT SETTINGS ---
     if (vsBot) {
-        std::cout << "\n\nSelect Bot Difficulty:\n";
-        std::cout << "[1] Easy (Random)\n";
-        std::cout << "[2] Mid (Will block and win)\n";
-        std::cout << "[3] Hard (Unbeatable)\n";
-        std::cout << "[Q] Quit to Menu\n\n> ";
-
+        // Difficulty Selection
+        sel = 0;
+        std::string diffs[] = {"Easy (Random)", "Mid (Will block and win)", "Hard (Unbeatable)"};
+        
         while (true) {
-            char input = toupper(_getch());
+            Display::clearScreen();
+            Display::printColored("--- TIC-TAC-TOE SETUP ---\n\n", Color::YELLOW);
+            std::cout << "Select Bot Difficulty:\n";
+            
+            for (int i = 0; i < 3; i++) {
+                if (i == sel) Display::printColored("> " + diffs[i] + "\n", Color::GREEN);
+                else std::cout << "  " + diffs[i] << "\n";
+            }
+            std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
+
+            int input = getInput();
             if (input == 'Q') return false;
-            if (input >= '1' && input <= '3') {
-                botDifficulty = input - '0';
+            if (input == 'W' && sel > 0) sel--;
+            if (input == 'S' && sel < 2) sel++;
+            if (input == ' ' || input == '\r' || input == '\n') {
+                botDifficulty = sel + 1; // 1=Easy, 2=Mid, 3=Hard
                 break;
             }
         }
 
-        std::cout << "\n\nDo you want to play First (X) or Second (O)?\n";
-        std::cout << "[1] First (X)\n";
-        std::cout << "[2] Second (O)\n";
-        std::cout << "[Q] Quit to Menu\n\n> ";
-
+        // Play Order Selection
+        sel = 0;
+        std::string orders[] = {"First (X)", "Second (O)"};
+        
         while (true) {
-            char input = toupper(_getch());
-            if (input == 'Q') return false;
-            if (input == '1') {
-                botPiece = 'O';
-                playerPiece = 'X';
-                break;
+            Display::clearScreen();
+            Display::printColored("--- TIC-TAC-TOE SETUP ---\n\n", Color::YELLOW);
+            std::cout << "Do you want to play First or Second?\n";
+            
+            for (int i = 0; i < 2; i++) {
+                if (i == sel) Display::printColored("> " + orders[i] + "\n", Color::GREEN);
+                else std::cout << "  " + orders[i] << "\n";
             }
-            if (input == '2') {
-                botPiece = 'X';
-                playerPiece = 'O';
+            std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
+
+            int input = getInput();
+            if (input == 'Q') return false;
+            if (input == 'W' && sel > 0) sel--;
+            if (input == 'S' && sel < 1) sel++;
+            if (input == ' ' || input == '\r' || input == '\n') {
+                if (sel == 0) {
+                    botPiece = 'O';
+                    playerPiece = 'X';
+                } else {
+                    botPiece = 'X';
+                    playerPiece = 'O';
+                }
                 break;
             }
         }
@@ -98,7 +126,7 @@ void TicTacToe::drawBoard() {
         }
 
         if (i % 3 != 2) std::cout << "|";
-        else if (i != 8) std::cout << "\n — + — + — \n";
+        else if (i != 8) std::cout << "\n---+---+---\n";
     }
     std::cout << "\n\n";
 }
@@ -106,8 +134,8 @@ void TicTacToe::drawBoard() {
 bool TicTacToe::checkWin(const std::vector<char>& b, char player) {
     int winLines[8][3] = {
         {0, 1, 2}, {3, 4, 5}, {6, 7, 8},
-        {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, 
-        {0, 4, 8}, {2, 4, 6} 
+        {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
+        {0, 4, 8}, {2, 4, 6}            
     };
 
     for (int i = 0; i < 8; i++) {
@@ -125,16 +153,11 @@ bool TicTacToe::checkDraw(const std::vector<char>& b) {
     return true;
 }
 
-// --- AI LOGIC ---
-
+// --- AI LOGIC (Unchanged) ---
 int TicTacToe::getRandomMove() {
     std::vector<int> emptySpots;
-    for (int i = 0; i < 9; i++) {
-        if (board[i] == ' ') emptySpots.push_back(i);
-    }
-    if (!emptySpots.empty()) {
-        return emptySpots[rand() % emptySpots.size()];
-    }
+    for (int i = 0; i < 9; i++) if (board[i] == ' ') emptySpots.push_back(i);
+    if (!emptySpots.empty()) return emptySpots[rand() % emptySpots.size()];
     return -1;
 }
 
@@ -143,7 +166,7 @@ int TicTacToe::getWinningOrBlockingMove(char piece) {
         if (board[i] == ' ') {
             board[i] = piece;
             bool win = checkWin(board, piece);
-            board[i] = ' ';
+            board[i] = ' '; 
             if (win) return i;
         }
     }
@@ -151,7 +174,7 @@ int TicTacToe::getWinningOrBlockingMove(char piece) {
 }
 
 int TicTacToe::minimax(std::vector<char>& b, int depth, bool isMaximizing) {
-    if (checkWin(b, botPiece)) return 10 - depth;
+    if (checkWin(b, botPiece)) return 10 - depth; 
     if (checkWin(b, playerPiece)) return -10 + depth; 
     if (checkDraw(b)) return 0;
 
@@ -160,9 +183,8 @@ int TicTacToe::minimax(std::vector<char>& b, int depth, bool isMaximizing) {
         for (int i = 0; i < 9; i++) {
             if (b[i] == ' ') {
                 b[i] = botPiece;
-                int score = minimax(b, depth + 1, false);
+                bestScore = std::max(minimax(b, depth + 1, false), bestScore);
                 b[i] = ' ';
-                bestScore = std::max(score, bestScore);
             }
         }
         return bestScore;
@@ -171,9 +193,8 @@ int TicTacToe::minimax(std::vector<char>& b, int depth, bool isMaximizing) {
         for (int i = 0; i < 9; i++) {
             if (b[i] == ' ') {
                 b[i] = playerPiece;
-                int score = minimax(b, depth + 1, true);
+                bestScore = std::min(minimax(b, depth + 1, true), bestScore);
                 b[i] = ' ';
-                bestScore = std::min(score, bestScore);
             }
         }
         return bestScore;
@@ -183,7 +204,6 @@ int TicTacToe::minimax(std::vector<char>& b, int depth, bool isMaximizing) {
 int TicTacToe::getBestMove() {
     int bestScore = -1000;
     int move = -1;
-
     for (int i = 0; i < 9; i++) {
         if (board[i] == ' ') {
             board[i] = botPiece;
@@ -200,49 +220,31 @@ int TicTacToe::getBestMove() {
 
 void TicTacToe::botMove() {
     int chosenMove = -1;
-
     if (botDifficulty == 1) {
         chosenMove = getRandomMove();
-    } 
-    else if (botDifficulty == 2) {
-        chosenMove = getWinningOrBlockingMove(botPiece); 
-        if (chosenMove == -1) {
-            chosenMove = getWinningOrBlockingMove(playerPiece);
-        }
-        if (chosenMove == -1) {
-            chosenMove = getRandomMove();
-        }
-    } 
-    else if (botDifficulty == 3) { 
+    } else if (botDifficulty == 2) {
+        chosenMove = getWinningOrBlockingMove(botPiece);     
+        if (chosenMove == -1) chosenMove = getWinningOrBlockingMove(playerPiece); 
+        if (chosenMove == -1) chosenMove = getRandomMove();                       
+    } else if (botDifficulty == 3) { 
         int emptyCount = 0;
         for(char c : board) if(c == ' ') emptyCount++;
-        
-        if (emptyCount == 9) chosenMove = 0;
+        if (emptyCount == 9) chosenMove = 0; 
         else chosenMove = getBestMove();
     }
-
-    if (chosenMove != -1) {
-        board[chosenMove] = botPiece;
-    }
+    if (chosenMove != -1) board[chosenMove] = botPiece;
 }
 
 // --- GAME LOOP ---
-
 void TicTacToe::play() {
     bool skipSetup = false;
 
-    // The Master Game Loop
     while (true) {
-        
-        // 1. Setup Phase
-        if (!skipSetup) {
-            if (!setupOptions()) return; // If they press Q during setup, return to Main Menu
-        }
-        
+        if (!skipSetup && !setupOptions()) return; 
+
         resetBoard();
         bool gameRunning = true;
 
-        // 2. The Match Loop
         while (gameRunning) {
             drawBoard();
 
@@ -252,64 +254,66 @@ void TicTacToe::play() {
             } else {
                 std::cout << "Player " << currentPlayer << ", select a spot (1-9): ";
                 
-                char input = toupper(_getch());
+                int input = getInput();
+                
                 if (input == 'Q') {
-                std::cout << "\nAre you sure you want to quit to menu? (Y/N): ";
-                bool confirmQuit = false;
-                while (true) {
-                    int ans = getInput();
-                    if (ans == 'Y') { confirmQuit = true; break; }
-                    if (ans == 'N') { break; }
-                }
-                if (confirmQuit) return;
-                continue; // Skips the rest of the turn and redraws the board
-            } 
-
-                int move = input - '1'; 
-
-                if (move < 0 || move > 8 || board[move] != ' ') {
+                    std::cout << "\nAre you sure you want to quit to menu? (Y/N): ";
+                    bool confirmQuit = false;
+                    while (true) {
+                        int ans = getInput();
+                        if (ans == 'Y') { confirmQuit = true; break; }
+                        if (ans == 'N') { break; }
+                    }
+                    if (confirmQuit) return;
                     continue; 
                 }
 
+                int move = input - '1'; 
+                if (move < 0 || move > 8 || board[move] != ' ') {
+                    continue; 
+                }
                 board[move] = currentPlayer;
             }
 
-            // 3. Win/Draw Checking
-            if (checkWin(board, currentPlayer)) {
-                drawBoard();
-                Display::printColored("Player " + std::string(1, currentPlayer) + " WINS!\n\n", Color::GREEN);
+            if (checkWin(board, currentPlayer) || checkDraw(board)) {
                 gameRunning = false;
-            } 
-            else if (checkDraw(board)) {
-                drawBoard();
-                Display::printColored("It's a DRAW!\n\n", Color::YELLOW);
-                gameRunning = false;
-            } 
-            else {
+            } else {
                 currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
             }
         }
 
-        // 4. Post-Game Menu
-        std::cout << "[1] Play Again (Same Settings)\n";
-        if (vsBot) {
-            std::cout << "[2] Change Difficulty / Settings\n";
-        } else {
-            std::cout << "[2] Change Settings\n";
-        }
-        std::cout << "[Q] Quit to Main Menu\n\n> ";
+        // 2. Interactive Post-Game Menu
+        int endSel = 0;
+        std::string endOpts[] = {
+            "Play Again (Same Settings)",
+            "Change Settings",
+            "Quit to Main Menu"
+        };
 
-        bool validChoice = false;
-        while (!validChoice) {
-            char input = toupper(_getch());
-            if (input == '1') {
-                skipSetup = true;  // Bypass setupOptions() on the next loop iteration
-                validChoice = true;
-            } else if (input == '2') {
-                skipSetup = false; // Run setupOptions() on the next loop iteration
-                validChoice = true;
-            } else if (input == 'Q') {
-                return;            // Exit the play() method entirely, returning to Arcade Menu
+        while (true) {
+            drawBoard(); // Redraw board so it doesn't flicker away
+            
+            // Re-print the win/draw message
+            if (checkWin(board, currentPlayer)) {
+                Display::printColored("Player " + std::string(1, currentPlayer) + " WINS!\n\n", Color::GREEN);
+            } else {
+                Display::printColored("It's a DRAW!\n\n", Color::YELLOW);
+            }
+
+            // Print Interactive Menu
+            for (int i = 0; i < 3; i++) {
+                if (i == endSel) Display::printColored("> " + endOpts[i] + "\n", Color::GREEN);
+                else std::cout << "  " << endOpts[i] << "\n";
+            }
+            std::cout << "\n[W/S] Navigate | [SPACE] Select\n> ";
+
+            int choice = getInput();
+            if (choice == 'W' && endSel > 0) endSel--;
+            if (choice == 'S' && endSel < 2) endSel++;
+            if (choice == ' ' || choice == '\r' || choice == '\n') {
+                if (endSel == 0) { skipSetup = true; break; }
+                if (endSel == 1) { skipSetup = false; break; }
+                if (endSel == 2) { return; }
             }
         }
     }

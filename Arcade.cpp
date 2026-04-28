@@ -8,6 +8,7 @@
  #include "Games/TicTacToe.h"
  #include "Games/MineSweeper.h"
  #include "Games/Game2048.h"
+ #include "Games/Blackjack.h"
 
 Arcade::Arcade() {
     running = true;
@@ -16,12 +17,15 @@ Arcade::Arcade() {
 
     auto ms = std::make_shared<MineSweeper>();
     auto g2048 = std::make_shared<Game2048>();
+    auto bj = std::make_shared<Blackjack>();
 
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
+    bj->setDatabase(db.get());
 
-    soloGames.push_back(g2048);
     soloGames.push_back(ms);
+    soloGames.push_back(g2048);
+    soloGames.push_back(bj);
 
     pvpGames.push_back(std::make_shared<TicTacToe>());
 	 //pvpGames.push_back(std::make_shared<NIM>()); 
@@ -100,7 +104,7 @@ void Arcade::renderFrame() {
 
     Display::printColored("SELECTED: " + currentGame->getName() + "\n", Color::YELLOW);
     std::cout << currentGame->getDescription() << "\n\n";
-    std::cout << "Controls: [W/S] Navigate | [ENTER] Play | [Q] Quit\n";
+    std::cout << "Controls: [W/S] Navigate | [SPACE] Play | [Q] Quit\n";
 }
 
 void Arcade::handleInput() {
@@ -144,3 +148,5 @@ void Arcade::run() {
         handleInput();
     }
 }
+
+// UUDDLRLRBA - add an easter egg if the user inputs this famous Konami Code sequence on the main menu (not in a game) - maybe it unlocks a secret game or just prints a fun message?
