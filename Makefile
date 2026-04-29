@@ -1,3 +1,3 @@
 run:
-	g++ *.cpp Games/*.cpp -o main
+	g++ *.cpp -o main
 	./main

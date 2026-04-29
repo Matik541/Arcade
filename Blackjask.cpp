@@ -318,9 +318,10 @@ void Blackjack::play() {
                 if (i == endSel) Display::printColored("> " + endOpts[i] + "\n", Color::GREEN);
                 else std::cout << "  " << endOpts[i] << "\n";
             }
-            std::cout << "\n[W/S] Navigate | [SPACE] Select\n> ";
+            std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
 
             int choice = getInput();
+            if (choice == 'Q' ) return;
             if (choice == 'W' && endSel > 0) endSel--;
             if (choice == 'S' && endSel < 2) endSel++;
             if (choice == ' ' || choice == '\r' || choice == '\n') {

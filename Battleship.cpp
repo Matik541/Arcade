@@ -11,12 +11,8 @@ Battleship::Battleship() : Game("Battleship", "Sink the enemy fleet before they 
 
 bool Battleship::setupOptions() {
     int sel = 0;
-    std::string diffs[] = {
-        "Easy (Random Firing)",
-        "Mid (Hunts adjacent cells after a hit)",
-        "Hard (Math Checkerboard + Smart Hunting)"
-    };
-
+    std::string diffs[] = {"Easy (Random Firing)", "Mid (Hunts adjacent cells after a hit)", "Hard (Math Checkerboard + Smart Hunting)"};
+    
     while (true) {
         Display::clearScreen();
         Display::printColored("--- BATTLESHIP SETUP ---\n\n", Color::YELLOW);
@@ -38,8 +34,8 @@ bool Battleship::setupOptions() {
     }
 
     sel = 0;
-    std::string placeOpts[] = { "Manual Placement (Interactive)", "Auto Placement (Fast)" };
-
+    std::string placeOpts[] = {"Manual Placement (Interactive)", "Auto Placement (Fast)"};
+    
     while (true) {
         Display::clearScreen();
         Display::printColored("--- BATTLESHIP SETUP ---\n\n", Color::YELLOW);
@@ -65,44 +61,54 @@ bool Battleship::setupOptions() {
 bool Battleship::canPlaceShip(const std::vector<std::vector<int>>& board, int x, int y, int length, bool horizontal) {
     if (horizontal) {
         if (x + length > 10) return false;
-        for (int i = 0; i < length; i++) if (board[y][x + i] != 0) return false;
-    }
-    else {
+        for (int i = 0; i < length; i++) if (board[y][x + i] != -1) return false;
+    } else {
         if (y + length > 10) return false;
-        for (int i = 0; i < length; i++) if (board[y + i][x] != 0) return false;
+        for (int i = 0; i < length; i++) if (board[y + i][x] != -1) return false;
     }
     return true;
 }
 
-void Battleship::placeShip(std::vector<std::vector<int>>& board, int x, int y, int length, bool horizontal) {
+void Battleship::placeShip(std::vector<std::vector<int>>& board, int x, int y, int length, bool horizontal, int shipId) {
     for (int i = 0; i < length; i++) {
-        if (horizontal) board[y][x + i] = 1;
-        else board[y + i][x] = 1;
+        if (horizontal) board[y][x + i] = shipId;
+        else board[y + i][x] = shipId;
     }
 }
 
-void Battleship::autoPlaceShips(std::vector<std::vector<int>>& board) {
-    int shipSizes[] = { 5, 4, 3, 3, 2 };
-    for (int size : shipSizes) {
+void Battleship::autoPlaceShips(std::vector<std::vector<int>>& board, std::vector<ShipData>& fleet) {
+    for (int i = 0; i < 5; i++) {
         bool placed = false;
         while (!placed) {
             int x = rand() % 10;
             int y = rand() % 10;
             bool horizontal = rand() % 2 == 0;
-            if (canPlaceShip(board, x, y, size, horizontal)) {
-                placeShip(board, x, y, size, horizontal);
+            if (canPlaceShip(board, x, y, fleet[i].length, horizontal)) {
+                fleet[i].startX = x;
+                fleet[i].startY = y;
+                fleet[i].horizontal = horizontal;
+                placeShip(board, x, y, fleet[i].length, horizontal, i);
                 placed = true;
             }
         }
     }
 }
 
-void Battleship::manualPlaceShips() {
-    int shipSizes[] = { 5, 4, 3, 3, 2 };
-    std::string shipNames[] = { "Carrier (5)", "Battleship (4)", "Cruiser (3)", "Submarine (3)", "Destroyer (2)" };
+std::string Battleship::getShipPart(int x, int y, int startX, int startY, int length, bool horizontal) {
+    if (horizontal) {
+        if (x == startX) return "<";
+        if (x == startX + length - 1) return ">";
+        return "Ꮖ";
+    } else {
+        if (y == startY) return "Λ";
+        if (y == startY + length - 1) return "V"; // Lowercase v makes a great downward point
+        return "H";
+    }
+}
 
+void Battleship::manualPlaceShips() {
     for (int i = 0; i < 5; i++) {
-        int len = shipSizes[i];
+        int len = pShips[i].length;
         bool horizontal = true;
         int cx = 0, cy = 0;
         bool placing = true;
@@ -110,27 +116,27 @@ void Battleship::manualPlaceShips() {
         while (placing) {
             Display::clearScreen();
             Display::printColored("=== SHIP PLACEMENT ===\n\n", Color::YELLOW);
-            std::cout << "Placing: " << shipNames[i] << "\n";
+            std::cout << "Placing: " << pShips[i].name << " (" << len << ")\n";
             std::cout << "[WASD] Move | [R] Rotate | [SPACE] Confirm\n\n";
 
-            std::cout << "   A B C D E F G H I J\n";
+            std::cout << "   A  B  C  D  E  F  G  H  I  J\n";
             for (int y = 0; y < 10; y++) {
                 std::cout << y << " ";
                 for (int x = 0; x < 10; x++) {
-                    // Check if coordinate is part of the hovering ghost ship
                     bool isGhost = false;
                     if (horizontal && y == cy && x >= cx && x < cx + len) isGhost = true;
                     if (!horizontal && x == cx && y >= cy && y < cy + len) isGhost = true;
 
+                    std::cout << " ";
                     if (isGhost) {
                         bool valid = canPlaceShip(playerBoard, cx, cy, len, horizontal);
-                        Display::printColored(" @", valid ? Color::GREEN : Color::RED);
-                    }
-                    else {
+                        Display::printColored(getShipPart(x, y, cx, cy, len, horizontal), valid ? Color::GREEN : Color::RED);
+                    } else {
                         int cell = playerBoard[y][x];
-                        if (cell == 0) std::cout << " ~";
-                        else if (cell == 1) Display::printColored(" #", Color::CYAN);
+                        if (cell == -1) Display::printColored("~", Color::BLUE);
+                        else Display::printColored(getShipPart(x, y, pShips[cell].startX, pShips[cell].startY, pShips[cell].length, pShips[cell].horizontal), Color::RESET);
                     }
+                    std::cout << " ";
                 }
                 std::cout << "\n";
             }
@@ -148,13 +154,15 @@ void Battleship::manualPlaceShips() {
             }
             if (input == 'R') {
                 horizontal = !horizontal;
-                // Clamp back into bounds if rotation pushes it off board
                 if (horizontal && cx + len > 10) cx = 10 - len;
                 if (!horizontal && cy + len > 10) cy = 10 - len;
             }
             if (input == ' ' || input == '\r' || input == '\n') {
                 if (canPlaceShip(playerBoard, cx, cy, len, horizontal)) {
-                    placeShip(playerBoard, cx, cy, len, horizontal);
+                    pShips[i].startX = cx;
+                    pShips[i].startY = cy;
+                    pShips[i].horizontal = horizontal;
+                    placeShip(playerBoard, cx, cy, len, horizontal, i);
                     placing = false;
                 }
             }
@@ -163,53 +171,73 @@ void Battleship::manualPlaceShips() {
 }
 
 void Battleship::resetBoards() {
-    playerBoard.assign(10, std::vector<int>(10, 0));
-    botBoard.assign(10, std::vector<int>(10, 0));
+    pShips = {{"Carrier", 5, false, 0, 0, true}, {"Battleship", 4, false, 0, 0, true}, {"Cruiser", 3, false, 0, 0, true}, {"Submarine", 3, false, 0, 0, true}, {"Destroyer", 2, false, 0, 0, true}};
+    bShips = pShips;
+
+    playerBoard.assign(10, std::vector<int>(10, -1));
+    botBoard.assign(10, std::vector<int>(10, -1));
+    playerState.assign(10, std::vector<int>(10, 0));
+    botState.assign(10, std::vector<int>(10, 0));
+    
     botFired.assign(10, std::vector<bool>(10, false));
     botTargetQueue.clear();
-
+    
     pCursorX = 0;
     pCursorY = 0;
     actionMessage = "Awaiting your orders, Commander.";
 
-    autoPlaceShips(botBoard);
-
+    autoPlaceShips(botBoard, bShips);
+    
     if (manualPlacement) manualPlaceShips();
-    else autoPlaceShips(playerBoard);
+    else autoPlaceShips(playerBoard, pShips);
 }
 
 void Battleship::drawBoards() {
     Display::clearScreen();
     Display::printColored("=== BATTLESHIP ===\n\n", Color::YELLOW);
-
-    // Perfectly aligned headers using A-J
-    Display::printColored("       YOUR FLEET                      ENEMY FLEET\n", Color::CYAN);
-    std::cout << "   A B C D E F G H I J           A  B  C  D  E  F  G  H  I  J\n";
+    
+    Display::printColored(
+                    "   YOUR OCEAN MAP               \t    ENEMY OCEAN RADAR            \n", Color::CYAN);
+    std::cout <<    "   A  B  C  D  E  F  G  H  I  J \t    A  B  C  D  E  F  G  H  I  J \n";
 
     for (int y = 0; y < 10; y++) {
         // --- DRAW PLAYER BOARD (Left) ---
         std::cout << y << " ";
         for (int x = 0; x < 10; x++) {
             std::cout << " ";
-            int cell = playerBoard[y][x];
-            if (cell == 0) std::cout << "~";
-            else if (cell == 1) Display::printColored("#", Color::CYAN);
-            else if (cell == 2) Display::printColored("O", Color::RESET);
-            else if (cell == 3) Display::printColored("X", Color::RED);
+            int id = playerBoard[y][x];
+            int st = playerState[y][x];
+
+            if (st == 0) {
+                if (id == -1) Display::printColored("~", Color::BLUE);
+                else Display::printColored(getShipPart(x, y, pShips[id].startX, pShips[id].startY, pShips[id].length, pShips[id].horizontal), Color::RESET); 
+            } else if (st == 1) {
+                Display::printColored(".", Color::RESET); 
+            } else if (st == 2) {
+                if (id != -1 && pShips[id].sunk) Display::printColored(getShipPart(x, y, pShips[id].startX, pShips[id].startY, pShips[id].length, pShips[id].horizontal), Color::RED); 
+                else Display::printColored("X", Color::RED); 
+            }
+            std::cout << " ";
         }
 
-        // 8 Spaces + 1 digit + 1 Space = perfectly bridges the gap to the next board
-        std::cout << "        " << y << " ";
+        std::cout << " \t " << y << " ";
 
         // --- DRAW BOT BOARD (Right) ---
         for (int x = 0; x < 10; x++) {
             if (x == pCursorX && y == pCursorY) Display::printColored("[", Color::CYAN);
             else std::cout << " ";
 
-            int cell = botBoard[y][x];
-            if (cell == 0 || cell == 1) Display::printColored("~", Color::BLUE);
-            else if (cell == 2) Display::printColored("O", Color::RESET);
-            else if (cell == 3) Display::printColored("X", Color::GREEN);
+            int id = botBoard[y][x];
+            int st = botState[y][x];
+
+            if (st == 0) {
+                Display::printColored("~", Color::BLUE);
+            } else if (st == 1) {
+                Display::printColored(".", Color::RESET); 
+            } else if (st == 2) {
+                if (id != -1 && bShips[id].sunk) Display::printColored(getShipPart(x, y, bShips[id].startX, bShips[id].startY, bShips[id].length, bShips[id].horizontal), Color::RED);
+                else Display::printColored("X", Color::RED); 
+            }
 
             if (x == pCursorX && y == pCursorY) Display::printColored("]", Color::CYAN);
             else std::cout << " ";
@@ -217,7 +245,6 @@ void Battleship::drawBoards() {
         std::cout << "\n";
     }
 
-    // Communication feed below boards
     Display::printColored("\n>>> " + actionMessage + "\n", Color::YELLOW);
     std::cout << "\n[WASD] Move Radar | [SPACE] Fire | [Q] Quit\n\n";
 }
@@ -241,7 +268,7 @@ std::string Battleship::botTurn() {
             for (int x = 0; x < 10; x++) {
                 if (!botFired[y][x]) {
                     if (botDifficulty < 3 || (x + y) % 2 == 0) {
-                        validTargets.push_back({ x, y });
+                        validTargets.push_back({x, y});
                     }
                 }
             }
@@ -250,7 +277,7 @@ std::string Battleship::botTurn() {
         if (validTargets.empty()) {
             for (int y = 0; y < 10; y++) {
                 for (int x = 0; x < 10; x++) {
-                    if (!botFired[y][x]) validTargets.push_back({ x, y });
+                    if (!botFired[y][x]) validTargets.push_back({x, y});
                 }
             }
         }
@@ -265,32 +292,42 @@ std::string Battleship::botTurn() {
     if (targetX != -1) {
         botFired[targetY][targetX] = true;
         std::string coord = std::string(1, 'A' + targetX) + std::to_string(targetY);
-
-        if (playerBoard[targetY][targetX] == 1) {
-            playerBoard[targetY][targetX] = 3;
+        int hitId = playerBoard[targetY][targetX];
+        
+        if (hitId != -1) { 
+            playerState[targetY][targetX] = 2; // Hit
+            
             if (botDifficulty >= 2) {
-                botTargetQueue.push_back({ targetX, targetY - 1 });
-                botTargetQueue.push_back({ targetX, targetY + 1 });
-                botTargetQueue.push_back({ targetX - 1, targetY });
-                botTargetQueue.push_back({ targetX + 1, targetY });
+                botTargetQueue.push_back({targetX, targetY - 1});
+                botTargetQueue.push_back({targetX, targetY + 1});
+                botTargetQueue.push_back({targetX - 1, targetY});
+                botTargetQueue.push_back({targetX + 1, targetY});
+            }
+
+            bool sunk = true;
+            for(int r=0; r<10; r++) {
+                for(int c=0; c<10; c++) {
+                    if (playerBoard[r][c] == hitId && playerState[r][c] != 2) sunk = false;
+                }
+            }
+            if (sunk) {
+                pShips[hitId].sunk = true;
+                return "Enemy fired at " + coord + " and SUNK your " + pShips[hitId].name + "!";
             }
             return "Enemy fired at " + coord + " and HIT YOUR SHIP!";
-        }
-        else if (playerBoard[targetY][targetX] == 0) {
-            playerBoard[targetY][targetX] = 2;
+        } else { 
+            playerState[targetY][targetX] = 1; // Miss
             return "Enemy fired at " + coord + " and missed.";
         }
     }
     return "Enemy is reloading...";
 }
 
-bool Battleship::checkWin(const std::vector<std::vector<int>>& board) {
-    for (int y = 0; y < 10; y++) {
-        for (int x = 0; x < 10; x++) {
-            if (board[y][x] == 1) return false;
-        }
+bool Battleship::checkWin(const std::vector<ShipData>& fleet) {
+    for (const auto& ship : fleet) {
+        if (!ship.sunk) return false; 
     }
-    return true;
+    return true; 
 }
 
 void Battleship::play() {
@@ -317,7 +354,7 @@ void Battleship::play() {
                     if (ans == 'N') { break; }
                 }
                 if (confirmQuit) return;
-                continue;
+                continue; 
             }
 
             if (input == 'W' && pCursorY > 0) pCursorY--;
@@ -326,46 +363,56 @@ void Battleship::play() {
             if (input == 'D' && pCursorX < 9) pCursorX++;
 
             if (input == ' ' || input == '\r' || input == '\n') {
-                int targetCell = botBoard[pCursorY][pCursorX];
-
-                if (targetCell == 2 || targetCell == 3) continue; // Already shot here
+                int hitId = botBoard[pCursorY][pCursorX];
+                int st = botState[pCursorY][pCursorX];
+                
+                if (st != 0) continue; 
 
                 std::string pCoord = std::string(1, 'A' + pCursorX) + std::to_string(pCursorY);
 
-                if (targetCell == 1) {
-                    botBoard[pCursorY][pCursorX] = 3;
-                    actionMessage = "You fired at " + pCoord + "... DIRECT HIT!";
-                }
-                else {
-                    botBoard[pCursorY][pCursorX] = 2;
+                if (hitId != -1) {
+                    botState[pCursorY][pCursorX] = 2; // Hit
+                    
+                    bool sunk = true;
+                    for(int r=0; r<10; r++) {
+                        for(int c=0; c<10; c++) {
+                            if (botBoard[r][c] == hitId && botState[r][c] != 2) sunk = false;
+                        }
+                    }
+                    if (sunk) {
+                        bShips[hitId].sunk = true;
+                        actionMessage = "You fired at " + pCoord + "... SUNK the enemy " + bShips[hitId].name + "!";
+                    } else {
+                        actionMessage = "You fired at " + pCoord + "... DIRECT HIT!";
+                    }
+                } else {
+                    botState[pCursorY][pCursorX] = 1; // Miss
                     actionMessage = "You fired at " + pCoord + "... Miss.";
                 }
 
-                if (checkWin(botBoard)) {
+                if (checkWin(bShips)) {
                     playerWon = true;
                     gameRunning = false;
                     continue;
                 }
 
-                // Append bot's action to the message feed
                 actionMessage += "\n>>> " + botTurn();
 
-                if (checkWin(playerBoard)) {
+                if (checkWin(pShips)) {
                     playerWon = false;
                     gameRunning = false;
                 }
             }
         }
 
-        // --- END GAME MENU ---
         drawBoards();
-
+        
         if (playerWon) Display::printColored("VICTORY! You destroyed the enemy fleet.\n\n", Color::GREEN);
         else Display::printColored("DEFEAT! Your fleet was sent to the bottom of the ocean.\n\n", Color::RED);
 
         int endSel = 0;
-        std::string endOpts[] = { "Play Again (Same Setup)", "Change Setup", "Quit to Main Menu" };
-        bool madeChoice = false;
+        std::string endOpts[] = {"Play Again (Same Setup)", "Change Setup", "Quit to Main Menu"};
+        bool madeChoice = false; 
 
         while (!madeChoice) {
             std::cout << "\n--- POST GAME ---\n";
@@ -373,9 +420,10 @@ void Battleship::play() {
                 if (i == endSel) Display::printColored("> " + endOpts[i] + "\n", Color::GREEN);
                 else std::cout << "  " << endOpts[i] << "\n";
             }
-            std::cout << "\n[W/S] Navigate | [SPACE/ENTER] Select\n> ";
+            std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
 
             int choice = getInput();
+            if (choice == 'Q' ) return;
             if (choice == 'W' && endSel > 0) endSel--;
             if (choice == 'S' && endSel < 2) endSel++;
             if (choice == ' ' || choice == '\r' || choice == '\n') {
@@ -383,7 +431,7 @@ void Battleship::play() {
                 if (endSel == 1) { skipSetup = false; madeChoice = true; }
                 if (endSel == 2) { return; }
             }
-            if (!madeChoice) drawBoards();
+            if (!madeChoice) drawBoards(); 
         }
     }
 }
