@@ -6,3 +6,7 @@ Blackjack,Matik,1000
 Blackjack,Matik,200
 Blackjack,,200
 MineSweeper,Matik,305
+Snake,Matik,160
+Snake,Matik,90
+Snake,Matik,70
+Snake,Matik,50

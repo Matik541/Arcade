@@ -3,16 +3,45 @@
 
 #include <ctype.h>
 
-// Check for both 32-bit and 64-bit Windows
 #if defined(_WIN32) || defined(_WIN64)
     #include <conio.h>
-// If not Windows, we assume Linux/Mac (Codespaces)
+    
+    // Windows non-blocking check
+    inline bool hasInput() {
+        return _kbhit() != 0;
+    }
+
 #else
     #include <termios.h>
     #include <unistd.h>
     #include <stdio.h>
+    #include <fcntl.h>
 
-    // Linux/Mac implementation of _getch()
+    // Linux/Codespaces non-blocking check
+    inline bool hasInput() {
+        struct termios oldt, newt;
+        int ch;
+        int oldf;
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+        
+        oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+        fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+        
+        ch = getchar();
+        
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+        fcntl(STDIN_FILENO, F_SETFL, oldf);
+        
+        if (ch != EOF) {
+            ungetc(ch, stdin); // Put it back so getInput() can read it
+            return true;
+        }
+        return false;
+    }
+
     inline int _getch() {
         struct termios oldattr, newattr;
         int ch;
@@ -26,11 +55,9 @@
     }
 #endif
 
-// Smart input handler that translates arrows to WASD
 inline int getInput() {
     int ch = _getch();
 
-    // Windows Arrow Keys (Returns 0 or 224, followed by the key code)
     if (ch == 0 || ch == 224) {
         ch = _getch();
         if (ch == 72) return 'W'; 
@@ -38,7 +65,6 @@ inline int getInput() {
         if (ch == 75) return 'A'; 
         if (ch == 77) return 'D'; 
     }
-    // Linux/Codespaces Arrow Keys (Returns ESC [ \033 ], followed by A, B, C, or D)
     else if (ch == 27) {
         ch = _getch();
         if (ch == 91) { 
@@ -48,9 +74,8 @@ inline int getInput() {
             if (ch == 68) return 'A'; 
             if (ch == 67) return 'D'; 
         }
-        return 27; // Return raw ESC if it wasn't an arrow
+        return 27; 
     }
-
     return toupper(ch);
 }
 

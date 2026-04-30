@@ -21,7 +21,7 @@ bool Battleship::setupOptions() {
             if (i == sel) Display::printColored("> " + diffs[i] + "\n", Color::GREEN);
             else std::cout << "  " + diffs[i] << "\n";
         }
-        std::cout << "\n[W/S] Navigate | [SPACE/ENTER] Select | [Q] Quit\n> ";
+        std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
 
         int input = getInput();
         if (input == 'Q') return false;
@@ -44,7 +44,7 @@ bool Battleship::setupOptions() {
             if (i == sel) Display::printColored("> " + placeOpts[i] + "\n", Color::GREEN);
             else std::cout << "  " + placeOpts[i] << "\n";
         }
-        std::cout << "\n[W/S] Navigate | [SPACE/ENTER] Select | [Q] Quit\n> ";
+        std::cout << "\n[W/S] Navigate | [SPACE] Select | [Q] Quit\n> ";
 
         int input = getInput();
         if (input == 'Q') return false;

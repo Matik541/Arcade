@@ -10,6 +10,7 @@
 #include "Game2048.h"
 #include "Blackjack.h"
 #include "Battleship.h"
+#include "Snake.h"
 
 Arcade::Arcade() {
     running = true;
@@ -21,14 +22,17 @@ Arcade::Arcade() {
     auto g2048 = std::make_shared<Game2048>();
     auto bj = std::make_shared<Blackjack>();
     auto bs = std::make_shared<Battleship>();
+    auto sn = std::make_shared<Snake>();
 
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
     bj->setDatabase(db.get());
+    sn->setDatabase(db.get());
 
     soloGames.push_back(ms);
     soloGames.push_back(g2048);
     soloGames.push_back(bj);
+    soloGames.push_back(sn);
 
     pvpGames.push_back(ttt);
     pvpGames.push_back(bs);
