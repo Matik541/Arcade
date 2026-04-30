@@ -236,7 +236,7 @@ void Game2048::play() {
             std::string playerName;
             std::cin >> playerName;
             // Notice we pass true (higherScoreBetter) here because the Game class manages it
-            db->saveScore(name, playerName, score, isHigherBetter()); 
+            db->saveScore(name, playerName, score, isHigherScoreBetter()); 
             Display::printColored("Score Saved!\n\n", Color::GREEN);
             while((getchar()) != '\n'); 
         }

@@ -283,7 +283,7 @@ void MineSweeper::play() {
                 std::cout << "NEW RECORD! Enter your name (no spaces): ";
                 std::string playerName;
                 std::cin >> playerName;
-                db->saveScore(name, playerName, timeTaken, isHigherBetter());
+                db->saveScore(name, playerName, timeTaken, isHigherScoreBetter());
                 Display::printColored("Score Saved!\n\n", Color::GREEN);
                 while((getchar()) != '\n'); 
             }

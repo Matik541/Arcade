@@ -71,7 +71,7 @@ void Arcade::renderFrame() {
     // 3. Build the Right Scoreboard dynamically
     std::vector<std::string> rightScores;
     if (currentGame->usesScoreboard()) {
-        auto scores = db->getTop5(currentGame->getName(), currentGame->isHigherBetter());
+        auto scores = db->getTop5(currentGame->getName(), currentGame->isHigherScoreBetter());
         for (int i = 0; i < 5; ++i) {
             if (i < scores.size()) {
                 rightScores.push_back(std::to_string(i + 1) + ". " + scores[i].playerName + " - " + std::to_string(scores[i].score));

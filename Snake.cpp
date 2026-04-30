@@ -195,7 +195,7 @@ void Snake::play() {
             std::cout << "Enter your name for the Scoreboard (no spaces): ";
             std::string playerName;
             std::cin >> playerName;
-            db->saveScore(name, playerName, score, isHigherBetter());
+            db->saveScore(name, playerName, score, isHigherScoreBetter());
             Display::printColored("Score Saved!\n\n", Color::GREEN);
             while((getchar()) != '\n'); 
         }

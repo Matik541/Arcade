@@ -295,7 +295,7 @@ void Blackjack::play() {
             std::cout << "You made a profit! Enter your name for the Scoreboard: ";
             std::string playerName;
             std::cin >> playerName;
-            db->saveScore(name, playerName, bankroll, isHigherBetter());
+            db->saveScore(name, playerName, bankroll, isHigherScoreBetter());
             Display::printColored("Score Saved!\n\n", Color::GREEN);
             while((getchar()) != '\n'); 
         }

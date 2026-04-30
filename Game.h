@@ -23,7 +23,7 @@ public:
     std::string getName() const { return name; }
     std::string getDescription() const { return description; }
     bool usesScoreboard() const { return hasScoreboard; }
-    bool isHigherBetter() const { return higherIsBetter; }
+    bool isHigherScoreBetter() const { return higherIsBetter; }
 };
 
 #endif
