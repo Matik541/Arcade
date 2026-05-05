@@ -11,6 +11,7 @@
 #include "Blackjack.h"
 #include "Battleship.h"
 #include "Snake.h"
+#include "Solitaire.h"
 
 Arcade::Arcade() {
     running = true;
@@ -23,6 +24,7 @@ Arcade::Arcade() {
     auto bj = std::make_shared<Blackjack>();
     auto bs = std::make_shared<Battleship>();
     auto sn = std::make_shared<Snake>();
+    auto sol = std::make_shared<Solitaire>();
 
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
@@ -33,6 +35,7 @@ Arcade::Arcade() {
     soloGames.push_back(g2048);
     soloGames.push_back(bj);
     soloGames.push_back(sn);
+    soloGames.push_back(sol);
 
     pvpGames.push_back(ttt);
     pvpGames.push_back(bs);
