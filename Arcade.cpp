@@ -12,6 +12,7 @@
 #include "Battleship.h"
 #include "Snake.h"
 #include "Solitaire.h"
+#include "Bomberman.h"
 
 Arcade::Arcade() {
     running = true;
@@ -25,6 +26,7 @@ Arcade::Arcade() {
     auto bs = std::make_shared<Battleship>();
     auto sn = std::make_shared<Snake>();
     auto sol = std::make_shared<Solitaire>();
+    auto bm = std::make_shared<Bomberman>();
 
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
@@ -39,6 +41,7 @@ Arcade::Arcade() {
 
     pvpGames.push_back(ttt);
     pvpGames.push_back(bs);
+    pvpGames.push_back(bm);
 	 //pvpGames.push_back(std::make_shared<NIM>()); 
 }
 
