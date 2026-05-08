@@ -13,6 +13,7 @@
 #include "Snake.h"
 #include "Solitaire.h"
 #include "Bomberman.h"
+#include "CyberDefense.h"
 
 Arcade::Arcade() {
     // Initialize Database
@@ -27,6 +28,7 @@ Arcade::Arcade() {
     auto snake = std::make_shared<Snake>(); 
     auto sol = std::make_shared<Solitaire>(); 
     auto bomber = std::make_shared<Bomberman>(); 
+    auto pvz = std::make_shared<CyberDefense>();
     
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
@@ -43,6 +45,7 @@ Arcade::Arcade() {
     games.push_back(snake);
     games.push_back(sol);
     games.push_back(bomber);
+    games.push_back(pvz);
 }
 
 void Arcade::drawMenu(int selected) {
