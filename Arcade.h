@@ -1,22 +1,17 @@
 #ifndef ARCADE_H
 #define ARCADE_H
 
-#include "Game.h"
-#include "Database.h"
 #include <vector>
 #include <memory>
+#include "Game.h"
+#include "Database.h"
 
 class Arcade {
 private:
-    std::vector<std::shared_ptr<Game>> soloGames;
-    std::vector<std::shared_ptr<Game>> pvpGames;
-    std::unique_ptr<IDatabase> db;
-
-    int selectedIndex;
-    bool running;
-
-    void renderFrame();
-    void handleInput();
+    std::vector<std::shared_ptr<Game>> games;
+    std::unique_ptr<Database> db;
+    
+    void drawMenu(int selected);
 
 public:
     Arcade();

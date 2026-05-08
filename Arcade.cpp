@@ -1,10 +1,10 @@
 #include "Arcade.h"
 #include "Display.h"
+#include "Input.h"
 #include <iostream>
 #include <iomanip>
-#include <algorithm>
-#include "Input.h"
 
+// Include all games
 #include "TicTacToe.h"
 #include "MineSweeper.h"
 #include "Game2048.h"
@@ -15,152 +15,128 @@
 #include "Bomberman.h"
 
 Arcade::Arcade() {
-    running = true;
-    selectedIndex = 0; 
-    db = std::make_unique<FileDatabase>("scores.txt");
+    // Initialize Database
+    db = std::make_unique<Database>("scores.txt");
 
-    auto ttt = std::make_shared<TicTacToe>();
-    auto ms = std::make_shared<MineSweeper>();
-    auto g2048 = std::make_shared<Game2048>();
-    auto bj = std::make_shared<Blackjack>();
-    auto bs = std::make_shared<Battleship>();
-    auto sn = std::make_shared<Snake>();
-    auto sol = std::make_shared<Solitaire>();
-    auto bm = std::make_shared<Bomberman>();
-
+    // Initialize all games and safely pass the database pointer to all of them
+    auto ttt = std::make_shared<TicTacToe>(); 
+    auto ms = std::make_shared<MineSweeper>(); 
+    auto g2048 = std::make_shared<Game2048>(); 
+    auto bj = std::make_shared<Blackjack>(); 
+    auto bs = std::make_shared<Battleship>(); 
+    auto snake = std::make_shared<Snake>(); 
+    auto sol = std::make_shared<Solitaire>(); 
+    auto bomber = std::make_shared<Bomberman>(); 
+    
     ms->setDatabase(db.get());
     g2048->setDatabase(db.get());
     bj->setDatabase(db.get());
-    sn->setDatabase(db.get());
+    snake->setDatabase(db.get());
+    bomber->setDatabase(db.get());
 
-    soloGames.push_back(ms);
-    soloGames.push_back(g2048);
-    soloGames.push_back(bj);
-    soloGames.push_back(sn);
-    soloGames.push_back(sol);
-
-    pvpGames.push_back(ttt);
-    pvpGames.push_back(bs);
-    pvpGames.push_back(bm);
-	 //pvpGames.push_back(std::make_shared<NIM>()); 
+    // Push into unified list
+    games.push_back(ttt);
+    games.push_back(ms);
+    games.push_back(g2048);
+    games.push_back(bj);
+    games.push_back(bs);
+    games.push_back(snake);
+    games.push_back(sol);
+    games.push_back(bomber);
 }
 
-void Arcade::renderFrame() {
+void Arcade::drawMenu(int selected) {
     Display::clearScreen();
-    Display::printColored("=== ARCADE MACHINE ===\n\n", Color::YELLOW);
+    
+    // ASCII Banner
+    Display::printColored("\n===============================================", Color::YELLOW);
+    Display::printColored("\n           T E R M I N A L   A R C A D E       ", Color::CYAN);
+    Display::printColored("\n===============================================\n", Color::YELLOW);
 
-    std::shared_ptr<Game> currentGame;
-    if (selectedIndex < soloGames.size()) {
-        currentGame = soloGames[selectedIndex];
-    }
-    else {
-        currentGame = pvpGames[selectedIndex - soloGames.size()];
-    }
+    std::cout << "  Select a game to play:\n\n";
 
-    std::cout << std::left << std::setw(40) << "--- GAMES ---" << "--- SCOREBOARD (Top 5) ---\n";
-
-    // 2. Build the Left Menu dynamically
-    std::vector<std::string> leftMenu;
-
-    leftMenu.push_back("[ SOLO GAMES ]");
-    for (size_t i = 0; i < soloGames.size(); ++i) {
-        leftMenu.push_back((selectedIndex == i ? "> " : "  ") + soloGames[i]->getName());
-    }
-
-    leftMenu.push_back(""); 
-    leftMenu.push_back("[ PvP / PvB ]");
-    for (size_t i = 0; i < pvpGames.size(); ++i) {
-        int globalIndex = i + soloGames.size();
-        leftMenu.push_back((selectedIndex == globalIndex ? "> " : "  ") + pvpGames[i]->getName());
-    }
-
-    // 3. Build the Right Scoreboard dynamically
-    std::vector<std::string> rightScores;
-    if (currentGame->usesScoreboard()) {
-        auto scores = db->getTop5(currentGame->getName(), currentGame->isHigherScoreBetter());
-        for (int i = 0; i < 5; ++i) {
-            if (i < scores.size()) {
-                rightScores.push_back(std::to_string(i + 1) + ". " + scores[i].playerName + " - " + std::to_string(scores[i].score));
-            }
-            else {
-                rightScores.push_back(std::to_string(i + 1) + ". ---");
-            }
+    // Draw unified game list
+    for (size_t i = 0; i < games.size(); i++) {
+        if ((int)i == selected) {
+            Display::printColored("  > [ " + games[i]->getName() + " ]\n", Color::GREEN);
+        } else {
+            std::cout << "      " << games[i]->getName() << "\n";
         }
-    }
-    else {
-        rightScores.push_back("No scoreboard");
-        rightScores.push_back("for this game mode.");
-    }
-
-    int maxLines = std::max(leftMenu.size(), rightScores.size());
-    for (int i = 0; i < maxLines; ++i) {
-        std::string leftStr = (i < leftMenu.size()) ? leftMenu[i] : "";
-        std::string rightStr = (i < rightScores.size()) ? rightScores[i] : "";
-
-        if (leftStr.length() > 0 && leftStr[0] == '>') {
-            Display::printColored(leftStr, Color::GREEN); 
-        }
-        else if (leftStr.find("[") != std::string::npos) {
-            Display::printColored(leftStr, Color::CYAN); 
-        }
-        else {
-            std::cout << leftStr;
-        }
-
-        int padding = 40 - leftStr.length();
-        if (padding > 0) std::cout << std::string(padding, ' ');
-
-        std::cout << rightStr << "\n";
     }
 
     std::cout << "\n";
-    Display::drawLine(80, '=');
-
-    Display::printColored("SELECTED: " + currentGame->getName() + "\n", Color::YELLOW);
-    std::cout << currentGame->getDescription() << "\n\n";
-    std::cout << "Controls: [W/S] Navigate | [SPACE] Play | [Q] Quit\n";
-}
-
-void Arcade::handleInput() {
-    int input = getInput();
-
-    int totalGames = soloGames.size() + pvpGames.size();
-
-    if (totalGames == 0) {
-        if (input == 'Q') running = false;
-        return;
+    
+    // Exit Button
+    if (selected == games.size()) {
+        Display::printColored("  > [ Exit Arcade ]\n", Color::RED);
+    } else {
+        std::cout << "      Exit Arcade\n";
     }
 
-    if (input == 'Q') {
-        running = false;
-    }
-    else if (input == 'W') {
-        selectedIndex--;
-        if (selectedIndex < 0) {
-            selectedIndex = totalGames - 1;
+    // Dynamic Info & Scoreboard Box
+    Display::printColored("\n-----------------------------------------------\n", Color::YELLOW);
+    
+    if (selected < games.size()) {
+        Display::printColored(" INFO: ", Color::CYAN);
+        std::cout << games[selected]->getDescription() << "\n\n";
+
+        Display::printColored(" --- TOP 3 SCORES ---\n", Color::MAGENTA);
+        
+        // Fetch Top Scores for the hovered game
+        auto topScores = db->getTopScores(games[selected]->getName(), games[selected]->isHigherScoreBetter(), 3);
+        
+        if (topScores.empty()) {
+            std::cout << "  No records yet. Be the first!\n\n\n";
+        } else {
+            for (size_t i = 0; i < 3; i++) {
+                std::cout << "  " << (i + 1) << ". " << std::left;
+                if (i < topScores.size()) {
+                    std::cout << std::setw(15) << topScores[i].playerName 
+                              << " - " << topScores[i].score;
+                } else {
+                    std::cout << std::setw(15) << "---" << " - " << "---";
+                }
+                
+                // Add seconds suffix if lower is better (like Minesweeper times)
+                if (!games[selected]->isHigherScoreBetter()) {
+                    std::cout << " sec";
+                }
+                std::cout << "\n";
+            }
         }
+    } else {
+        Display::printColored(" INFO: ", Color::RED);
+        std::cout << "Close the arcade and return to desktop.\n\n\n";
     }
-    else if (input == 'S') {
-        selectedIndex++;
-        if (selectedIndex >= totalGames) {
-            selectedIndex = 0;
-        }
-    }
-    else if (input == '\r' || input == '\n' || input == ' ' || input == 'P') {
-        if (selectedIndex < soloGames.size()) {
-            soloGames[selectedIndex]->play();
-        }
-        else {
-            pvpGames[selectedIndex - soloGames.size()]->play();
-        }
-    }
+
+    Display::printColored("-----------------------------------------------\n", Color::YELLOW);
+    std::cout << "[W/S] Navigate | [SPACE/ENTER] Play | [Q] Quit\n> ";
 }
 
 void Arcade::run() {
-    while (running) {
-        renderFrame();
-        handleInput();
+    int selected = 0;
+    int totalOptions = games.size() + 1; // +1 for the Exit button at the bottom
+
+    while (true) {
+        drawMenu(selected);
+
+        int input = getInput();
+        
+        if (input == 'Q') break;
+        if (input == 'W' && selected > 0) selected--;
+        if (input == 'S' && selected < totalOptions - 1) selected++;
+        
+        if (input == ' ' || input == '\r' || input == '\n') {
+            if (selected == games.size()) {
+                break; // Exit selected
+            } else {
+                games[selected]->play();
+            }
+        }
     }
+    
+    Display::clearScreen();
+    Display::printColored("Thanks for playing! Shutting down...\n", Color::CYAN);
 }
 
 // UUDDLRLRBA - add an easter egg if the user inputs this famous Konami Code sequence on the main menu (not in a game) - maybe it unlocks a secret game or just prints a fun message?

@@ -10,7 +10,7 @@ protected:
     std::string description;
     bool hasScoreboard;
     bool higherIsBetter;
-    IDatabase* db; 
+    Database* db; 
 
 public:
     Game(std::string n, std::string desc, bool sc, bool hib = true) : name(n), description(desc), hasScoreboard(sc), higherIsBetter(hib), db(nullptr) {}
@@ -18,7 +18,7 @@ public:
 
     virtual void play() = 0; 
     
-    void setDatabase(IDatabase* database) { db = database; }
+    void setDatabase(Database* database) { db = database; }
 
     std::string getName() const { return name; }
     std::string getDescription() const { return description; }
