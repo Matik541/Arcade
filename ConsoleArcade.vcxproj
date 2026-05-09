@@ -142,23 +142,35 @@
     <ClCompile Include="Arcade.cpp" />
     <ClCompile Include="Battleship.cpp" />
     <ClCompile Include="Blackjask.cpp" />
+    <ClCompile Include="Bomberman.cpp" />
+    <ClCompile Include="CyberDefense.cpp" />
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Game2048.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="MineSweeper.cpp" />
+    <ClCompile Include="Snake.cpp" />
+    <ClCompile Include="Solitaire.cpp" />
     <ClCompile Include="TicTacToe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arcade.h" />
     <ClInclude Include="Battleship.h" />
     <ClInclude Include="Blackjack.h" />
+    <ClInclude Include="Bomberman.h" />
+    <ClInclude Include="CyberDefense.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Game2048.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="MineSweeper.h" />
+    <ClInclude Include="Snake.h" />
+    <ClInclude Include="Solitaire.h" />
     <ClInclude Include="TicTacToe.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="scores.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,15 +9,15 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Pliki zasobów">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Pliki źródłowe\Games">
       <UniqueIdentifier>{e64821b9-3d37-4da2-b5aa-131a52487af3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Pliki nagłówkowe\Games">
       <UniqueIdentifier>{3f2a47dd-950e-4752-b88f-799292b3ce03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Pliki zasobów">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +46,18 @@
       <Filter>Pliki źródłowe\Games</Filter>
     </ClCompile>
     <ClCompile Include="Battleship.cpp">
+      <Filter>Pliki źródłowe\Games</Filter>
+    </ClCompile>
+    <ClCompile Include="Bomberman.cpp">
+      <Filter>Pliki źródłowe\Games</Filter>
+    </ClCompile>
+    <ClCompile Include="CyberDefense.cpp">
+      <Filter>Pliki źródłowe\Games</Filter>
+    </ClCompile>
+    <ClCompile Include="Snake.cpp">
+      <Filter>Pliki źródłowe\Games</Filter>
+    </ClCompile>
+    <ClCompile Include="Solitaire.cpp">
       <Filter>Pliki źródłowe\Games</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,5 +89,25 @@
     <ClInclude Include="Battleship.h">
       <Filter>Pliki nagłówkowe\Games</Filter>
     </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Bomberman.h">
+      <Filter>Pliki nagłówkowe\Games</Filter>
+    </ClInclude>
+    <ClInclude Include="CyberDefense.h">
+      <Filter>Pliki nagłówkowe\Games</Filter>
+    </ClInclude>
+    <ClInclude Include="Snake.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Solitaire.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="scores.txt">
+      <Filter>Pliki źródłowe</Filter>
+    </Text>
   </ItemGroup>
 </Project>
