@@ -44,9 +44,11 @@ bool MineSweeper::setupOptions() {
             if (selected == 2) { width = 30; height = 16; numMines = 99; difficulty = 3; break; }
             if (selected == 3) { 
                 difficulty = 4;
+                Display::showCursor();
                 std::cout << "\nWidth (min 5, max 30): "; std::cin >> width;
                 std::cout << "Height (min 5, max 20): "; std::cin >> height;
                 std::cout << "Mines: "; std::cin >> numMines;
+                Display::hideCursor();
                 if(width < 5) width = 5; if(width > 30) width = 30;
                 if(height < 5) height = 5; if(height > 20) height = 20;
                 if(numMines >= width * height) numMines = (width * height) - 9; // Leave room for safe opening
@@ -145,6 +147,7 @@ void MineSweeper::drawBoard(bool gameOver, bool isWin) {
         std::cout << "\n";
     }
     std::cout << "\n";
+    Display::endFrame();
 }
 
 void MineSweeper::revealCell(int x, int y) {
@@ -281,7 +284,9 @@ void MineSweeper::play() {
             if (difficulty == 2 && db != nullptr) {
                 std::cout << "New record! Enter your name (no spaces): ";
                 std::string playerName;
+                Display::showCursor();
                 std::cin >> playerName;
+                Display::hideCursor();
                 db->saveScore(name, playerName, timeTaken, isHigherScoreBetter());
                 Display::printColored("Score Saved!\n\n", Color::GREEN);
                 while((getchar()) != '\n'); 

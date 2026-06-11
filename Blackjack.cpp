@@ -183,6 +183,7 @@ void Blackjack::drawTable(bool hideDealerCard, const std::string& message) {
     if (!message.empty()) {
         std::cout << message << "\n\n";
     }
+    Display::endFrame();
 }
 
 void Blackjack::play() {
@@ -294,7 +295,9 @@ void Blackjack::play() {
         if (isScored && db != nullptr && bankroll > startingBankroll) {
             std::cout << "You made a profit! Enter your name for the Scoreboard: ";
             std::string playerName;
+            Display::showCursor();
             std::cin >> playerName;
+            Display::hideCursor();
             db->saveScore(name, playerName, bankroll, isHigherScoreBetter());
             Display::printColored("Score Saved!\n\n", Color::GREEN);
             while((getchar()) != '\n'); 

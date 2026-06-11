@@ -2,11 +2,24 @@
 #define INPUT_H
 
 #include <ctype.h>
+#include <iostream>
+#include "Display.h"
+
+/**
+ * @file Input.h
+ * @brief Moduł obsługi wejścia klawiatury w konsoli.
+ * @details Zapewnia przenośność sterowania (Windows/Linux) oraz bezblokowe sprawdzanie bufora wejściowego.
+ */
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <conio.h>
     
+    /**
+     * @brief Sprawdza nieblokująco, czy w buforze wejściowym konsoli znajduje się znak.
+     * @return true Jeśli naciśnięto klawisz.
+     */
     inline bool hasInput() {
+        Display::endFrame();
         return _kbhit() != 0;
     }
 
@@ -16,7 +29,12 @@
     #include <stdio.h>
     #include <fcntl.h>
 
+    /**
+     * @brief Sprawdza nieblokująco, czy w buforze wejściowym konsoli znajduje się znak (dla POSIX).
+     * @return true Jeśli naciśnięto klawisz.
+     */
     inline bool hasInput() {
+        Display::endFrame();
         struct termios oldt, newt;
         int ch;
         int oldf;
@@ -40,6 +58,10 @@
         return false;
     }
 
+    /**
+     * @brief Pobiera pojedynczy znak z wejścia bez oczekiwania na klawisz Enter i bez wypisywania go na ekranie (dla POSIX).
+     * @return Kod pobranego znaku.
+     */
     inline int _getch() {
         struct termios oldattr, newattr;
         int ch;
@@ -53,26 +75,31 @@
     }
 #endif
 
+/**
+ * @brief Pobiera wejście użytkownika, mapując klawisze strzałek na odpowiedniki W/A/S/D.
+ * @return Wielka litera klawisza lub odpowiednik mapowany na W/A/S/D.
+ */
 inline int getInput() {
+    Display::endFrame();
     int ch = _getch();
 
     if (ch == 0 || ch == 224) {
         ch = _getch();
-        if (ch == 72) return 'W'; 
-        if (ch == 80) return 'S'; 
-        if (ch == 75) return 'A'; 
-        if (ch == 77) return 'D'; 
+        if (ch == 72) return 'W'; // Strzałka w górę -> W
+        if (ch == 80) return 'S'; // Strzałka w dół -> S
+        if (ch == 75) return 'A'; // Strzałka w lewo -> A
+        if (ch == 77) return 'D'; // Strzałka w prawo -> D
     }
     else if (ch == 27) {
         ch = _getch();
         if (ch == 91) { 
             ch = _getch();
-            if (ch == 65) return 'W'; 
-            if (ch == 66) return 'S'; 
-            if (ch == 68) return 'A'; 
-            if (ch == 67) return 'D'; 
+            if (ch == 65) return 'W'; // Strzałka w górę -> W
+            if (ch == 66) return 'S'; // Strzałka w dół -> S
+            if (ch == 68) return 'A'; // Strzałka w lewo -> A
+            if (ch == 67) return 'D'; // Strzałka w prawo -> D
         }
-        return 27; 
+        return 27; // ESC
     }
     return toupper(ch);
 }

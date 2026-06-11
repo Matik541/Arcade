@@ -4,62 +4,105 @@
 #include "Game.h"
 #include <vector>
 
+/**
+ * @struct Tower
+ * @brief Struktura reprezentująca wieżę obronną w grze Cyber Defense.
+ */
 struct Tower {
-    int x, y;
-    int type; // 1 = Miner (Generates Bits), 2 = Turret (Shoots), 3 = Firewall (High HP)
-    int hp;
-    int timer; // Tracks cooldowns for generating or shooting
+    int x, y;   ///< Współrzędne wieży (X, Y).
+    int type;   ///< Typ wieży: 1=Górnik (Generuje walutę), 2=Działko (Strzela), 3=Firewall (Dużo HP).
+    int hp;     ///< Aktualne punkty życia wieży.
+    int timer;  ///< Licznik czasu odnowienia (cooldown/generowanie).
 };
 
+/**
+ * @struct Enemy
+ * @brief Struktura reprezentująca wroga wędrującego po linii.
+ */
 struct Enemy {
-    int x, y;
-    int hp;
-    int maxHp;
-    char symbol; 
-    int moveTimer;
-    int speed; // Ticks required to move 1 space
+    int x, y;      ///< Współrzędne wroga (X, Y).
+    int hp;        ///< Bieżące punkty życia wroga.
+    int maxHp;     ///< Maksymalne punkty życia wroga.
+    char symbol;   ///< Symbol reprezentujący wroga w konsoli (np. 'V', 'W').
+    int moveTimer; ///< Czas pozostały do wykonania kolejnego kroku.
+    int speed;     ///< Liczba cykli gry wymagana do przesunięcia się o 1 pole.
 };
 
+/**
+ * @struct Projectile
+ * @brief Struktura reprezentująca pocisk wystrzelony przez wieżę.
+ */
 struct Projectile {
-    int x, y;
-    int damage;
+    int x, y;   ///< Współrzędne pocisku (X, Y).
+    int damage; ///< Obrażenia zadawane przy uderzeniu we wroga.
 };
 
+/**
+ * @class CyberDefense
+ * @brief Klasa implementująca grę w obronę linii (Tower Defense) w terminalu.
+ * @details Gracz broni 5 linii (ludzkich serwerów) przed nadchodzącymi wirusami, rozstawiając wieże w czasie rzeczywistym.
+ */
 class CyberDefense : public Game {
 private:
-    int width = 15;
-    int height = 5; // 5 lanes
-    int bits; // Your currency
-    int cursorX, cursorY;
-    int tickCounter;
-    bool isGameOver;
-    bool playerWon;
-    int waveDuration;
+    int width = 15;        ///< Szerokość planszy obrony.
+    int height = 5;        ///< Wysokość planszy (liczba linii/ścieżek).
+    int bits;              ///< Zgromadzone bity (waluta gry).
+    int cursorX, cursorY;  ///< Koordynaty kursora budowania.
+    int tickCounter;       ///< Licznik cykli gry.
+    bool isGameOver;       ///< Flaga przegranej.
+    bool playerWon;        ///< Flaga wygranej.
+    int waveDuration;      ///< Czas trwania fali w cyklach gry.
 
-    std::vector<Tower> towers;
-    std::vector<Enemy> enemies;
-    std::vector<Projectile> projectiles;
+    std::vector<Tower> towers;           ///< Lista aktywnych wież obronnych.
+    std::vector<Enemy> enemies;          ///< Lista aktywnych wirusów (wrogów).
+    std::vector<Projectile> projectiles;  ///< Lista pocisków w locie.
 
-    // Checks whether a tower already exists on a tile.
+    /**
+     * @brief Sprawdza, czy na danej pozycji stoi już wieża.
+     * @return true Jeśli pozycja (x, y) jest zajęta przez wieżę.
+     */
     bool hasTowerAt(int x, int y);
-    // Returns the index of the tower at a tile, or -1 if none exists.
+
+    /**
+     * @brief Pobiera indeks wieży na danej pozycji.
+     * @return Indeks wieży w wektorze towers lub -1 jeśli jej brak.
+     */
     int getTowerIndex(int x, int y);
-    // Checks whether an enemy has crossed into a lane range.
+
+    /**
+     * @brief Sprawdza, czy w danej linii (y) znajduje się wróg.
+     */
     bool isEnemyInLane(int y, int minX);
     
-    // Spawns one enemy for the current wave.
+    /**
+     * @brief Tworzy (spawnuje) nowego wroga na końcu jednej z linii.
+     */
     void spawnEnemy();
-    // Advances towers, enemies, and projectiles by one tick.
+
+    /**
+     * @brief Aktualizuje logikę gry o jeden krok czasowy (ruchy pocisków, wrogów, ataki wież).
+     */
     void updateLogic();
-    // Draws the lane map, towers, enemies, and HUD.
+
+    /**
+     * @brief Rysuje interfejs planszy, linie obrony, wieże, wrogów i HUD.
+     */
     void drawBoard();
-    // Restores the default wave and currency state.
+
+    /**
+     * @brief Resetuje stan gry, fali i waluty do domyślnych wartości.
+     */
     void resetGame();
 
 public:
-    // Sets up the Cyber Defense game state and metadata.
+    /**
+     * @brief Konstruktor gry CyberDefense.
+     */
     CyberDefense();
-    // Runs the full lane-defense gameplay loop.
+
+    /**
+     * @brief Uruchamia rozgrywkę Cyber Defense.
+     */
     void play() override;
 };
 

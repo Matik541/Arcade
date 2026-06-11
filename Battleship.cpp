@@ -247,6 +247,7 @@ void Battleship::drawBoards() {
 
     Display::printColored("\n>>> " + actionMessage + "\n", Color::YELLOW);
     std::cout << "\n[WASD] Move Radar | [SPACE] Fire | [Q] Quit\n\n";
+    Display::endFrame();
 }
 
 std::string Battleship::botTurn() {

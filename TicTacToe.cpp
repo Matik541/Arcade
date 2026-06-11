@@ -8,11 +8,15 @@
 
 TicTacToe::TicTacToe() : Game("Tic-Tac-Toe", "Classic 3x3 game. Get 3 in a row to win!", false) {
     srand(static_cast<unsigned int>(time(0))); 
+    cursorX = 1;
+    cursorY = 1;
 }
 
 void TicTacToe::resetBoard() {
     board.assign(9, ' ');
     currentPlayer = 'X'; 
+    cursorX = 1;
+    cursorY = 1;
 }
 
 // 1. Fully Interactive Setup Menus
@@ -105,26 +109,74 @@ void TicTacToe::drawBoard() {
     
     if (vsBot) {
         std::string diffLevel = (botDifficulty == 1) ? "Easy" : (botDifficulty == 2) ? "Mid" : "Hard";
-        std::cout << "Mode: vs BOT (" << diffLevel << ") Playing as " << botPiece << "\n";
+        std::cout << "Mode: vs BOT (" << diffLevel << ") | Player is " << playerPiece << "\n";
     } else {
         std::cout << "Mode: Player vs Player\n";
     }
     
     std::cout << "Press [Q] at any time to quit.\n\n";
 
-    for (int i = 0; i < 9; i++) {
-        if (board[i] == 'X') {
-            Display::printColored(" X ", Color::RED);
-        } else if (board[i] == 'O') {
-            Display::printColored(" O ", Color::BLUE);
-        } else {
-            std::cout << " " << (i + 1) << " ";
+    for (int y = 0; y < 3; y++) {
+        std::cout << "  +-------+-------+-------+\n";
+        
+        // Linia 1: Górna część komórki (zaznaczenie kursora)
+        std::cout << "  ";
+        for (int x = 0; x < 3; x++) {
+            std::cout << "|";
+            if (x == cursorX && y == cursorY) {
+                Display::printColored(".......", Color::CYAN);
+            } else {
+                std::cout << "       ";
+            }
         }
+        std::cout << "|\n";
 
-        if (i % 3 != 2) std::cout << "|";
-        else if (i != 8) std::cout << "\n — + — + — \n";
+        // Linia 2: Środkowa część z symbolem (X lub O) i kursorem
+        std::cout << "  ";
+        for (int x = 0; x < 3; x++) {
+            std::cout << "|";
+            bool isCursor = (x == cursorX && y == cursorY);
+            char piece = board[y * 3 + x];
+            if (isCursor) {
+                Display::printColored(".  ", Color::CYAN);
+                if (piece == 'X') {
+                    Display::printColored("X", Color::RED);
+                } else if (piece == 'O') {
+                    Display::printColored("O", Color::BLUE);
+                } else {
+                    std::cout << " ";
+                }
+                Display::printColored("  .", Color::CYAN);
+            } else {
+                if (piece == 'X') {
+                    std::cout << "   ";
+                    Display::printColored("X", Color::RED);
+                    std::cout << "   ";
+                } else if (piece == 'O') {
+                    std::cout << "   ";
+                    Display::printColored("O", Color::BLUE);
+                    std::cout << "   ";
+                } else {
+                    std::cout << "       ";
+                }
+            }
+        }
+        std::cout << "|\n";
+
+        // Linia 3: Dolna część komórki (zaznaczenie kursora)
+        std::cout << "  ";
+        for (int x = 0; x < 3; x++) {
+            std::cout << "|";
+            if (x == cursorX && y == cursorY) {
+                Display::printColored(".......", Color::CYAN);
+            } else {
+                std::cout << "       ";
+            }
+        }
+        std::cout << "|\n";
     }
-    std::cout << "\n\n";
+    std::cout << "  +-------+-------+-------+\n\n";
+    Display::endFrame();
 }
 
 bool TicTacToe::checkWin(const std::vector<char>& b, char player) {
@@ -245,8 +297,13 @@ void TicTacToe::play() {
             if (vsBot && currentPlayer == botPiece) {
                 Display::printColored("Bot is making a move...\n", Color::CYAN);
                 botMove();
+                if (checkWin(board, currentPlayer) || checkDraw(board)) {
+                    gameRunning = false;
+                } else {
+                    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                }
             } else {
-                std::cout << "Player " << currentPlayer << ", select a spot (1-9): ";
+                std::cout << "Player " << currentPlayer << " | Move: WASD/Arrows | Place: SPACE/ENTER\n";
                 
                 int input = getInput();
                 
@@ -262,17 +319,22 @@ void TicTacToe::play() {
                     continue; 
                 }
 
-                int move = input - '1'; 
-                if (move < 0 || move > 8 || board[move] != ' ') {
-                    continue; 
-                }
-                board[move] = currentPlayer;
-            }
+                if (input == 'W' && cursorY > 0) cursorY--;
+                if (input == 'S' && cursorY < 2) cursorY++;
+                if (input == 'A' && cursorX > 0) cursorX--;
+                if (input == 'D' && cursorX < 2) cursorX++;
 
-            if (checkWin(board, currentPlayer) || checkDraw(board)) {
-                gameRunning = false;
-            } else {
-                currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                if (input == ' ' || input == '\r' || input == '\n') {
+                    int move = cursorY * 3 + cursorX;
+                    if (board[move] == ' ') {
+                        board[move] = currentPlayer;
+                        if (checkWin(board, currentPlayer) || checkDraw(board)) {
+                            gameRunning = false;
+                        } else {
+                            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                        }
+                    }
+                }
             }
         }
 

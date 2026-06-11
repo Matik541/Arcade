@@ -203,6 +203,7 @@ void Solitaire::drawTable() {
     }
 
     std::cout << "\n[WASD] Navigate | [SPACE] Select/Move | [C] Cancel Sel | [R] Draw Deck | [Q] Quit\n\n";
+    Display::endFrame();
 }
 
 bool Solitaire::checkWin() {

@@ -225,6 +225,7 @@ void CyberDefense::drawBoard() {
         }
         std::cout << "\n";
     }
+    Display::endFrame();
 }
 
 void CyberDefense::play() {

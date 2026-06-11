@@ -5,58 +5,103 @@
 #include <vector>
 #include <string>
 
+/**
+ * @struct SolCard
+ * @brief Struktura reprezentująca pojedynczą kartę w grze Pasjans (Solitaire).
+ */
 struct SolCard {
-    std::string rank;
-    std::string suit;
-    int value; // 1 (Ace) to 13 (King)
-    int color; // 0 = Black, 1 = Red
-    bool faceUp;
+    std::string rank; ///< Ranga karty (np. "A", "2", "K").
+    std::string suit; ///< Kolor/symbol karty (np. "♠", "♥", "♦", "♣").
+    int value;        ///< Wartość numeryczna: 1 (As) do 13 (Król).
+    int color;        ///< Barwa karty: 0 = Czarna (Pik/Trefl), 1 = Czerwona (Kier/Karo).
+    bool faceUp;      ///< Czy karta leży koszulką do dołu (jest widoczna).
 };
 
+/**
+ * @class Solitaire
+ * @brief Klasa implementująca klasycznego Pasjansa Klondike w konsoli.
+ * @details Sterowanie odbywa się interaktywnym kursorem celownika z możliwością zaznaczania stref tableau, waste oraz fundamentów.
+ */
 class Solitaire : public Game {
 private:
-    int drawMode; // 1 or 3
-    int pCursorX, pCursorY; // Y = -1 is Top Bar. Y >= 0 is Tableau.
+    int drawMode;           ///< Tryb ciągnienia kart: 1 lub 3 karty na raz.
+    int pCursorX, pCursorY; ///< Współrzędne kursora (Y = -1 oznacza górną sekcję, Y >= 0 to kolumny Tableau).
     
-    // Selection Tracker (-1 = Nothing selected)
-    int selArea; // 0 = Waste, 1 = Tableau, 2 = Foundation
-    int selX;
-    int selY;
+    int selArea;            ///< Indeks wybranej sekcji źródłowej (-1=brak, 0=Waste, 1=Tableau, 2=Fundamenty).
+    int selX;               ///< Koordynat X wybranego źródła (np. numer kolumny).
+    int selY;               ///< Koordynat Y wybranego źródła (np. indeks karty w kolumnie).
 
-    std::vector<SolCard> stock;
-    std::vector<SolCard> waste;
-    std::vector<std::vector<SolCard>> foundations; // 4 piles
-    std::vector<std::vector<SolCard>> tableau;     // 7 columns
+    std::vector<SolCard> stock;                 ///< Stos stock (zakryty).
+    std::vector<SolCard> waste;                 ///< Stos waste (odkryte pociągnięte karty).
+    std::vector<std::vector<SolCard>> foundations; ///< Cztery stosy fundamentów (docelowe dla Asów do Króli).
+    std::vector<std::vector<SolCard>> tableau;     ///< Siedem kolumn roboczych planszy.
 
-    // Builds the draw-mode selection menu.
+    /**
+     * @brief Konfiguruje tryb gry (ciągnięcie 1 lub 3 kart).
+     * @return true Jeśli ustawiono poprawnie.
+     */
     bool setupOptions();
-    // Shuffles a full deck into the stock pile.
+
+    /**
+     * @brief Tworzy talię 52 kart i losowo ją tasuje w stosie stock.
+     */
     void buildAndShuffleDeck();
-    // Sets up a new Klondike layout.
+
+    /**
+     * @brief Resetuje planszę i rozdaje karty w układzie Klondike.
+     */
     void resetBoard();
-    // Draws one or more cards from stock into waste.
+
+    /**
+     * @brief Ciągnie karty ze stosu stock do stosu waste.
+     */
     void drawCardsFromStock();
-    // Snaps the cursor to the first visible card in the current column.
+
+    /**
+     * @brief Przesuwa kursor do pierwszej widocznej (odkrytej) karty w wybranej kolumnie tableau.
+     */
     void snapCursorToRevealed();
-    // Reveals the top card of each tableau pile if needed.
+
+    /**
+     * @brief Automatycznie odkrywa wierzchnią kartę w kolumnie tableau, jeśli jest zakryta.
+     */
     void autoReveal();
     
-    // Validates a move onto a tableau pile.
+    /**
+     * @brief Sprawdza, czy ruch karty na kolumnę Tableau jest zgodny z zasadami (naprzemienne kolory, malejąco).
+     */
     bool isValidTableauMove(const SolCard& src, int targetCol);
-    // Validates a move onto a foundation pile.
+
+    /**
+     * @brief Sprawdza, czy ruch karty na stos Fundamentów jest poprawny (ten sam kolor, rosnąco od Asa).
+     */
     bool isValidFoundationMove(const SolCard& src, int fIndex);
     
-    // Draws the full solitaire table.
+    /**
+     * @brief Rysuje całą planszę pasjansa na ekranie.
+     */
     void drawTable();
-    // Formats a card with cursor and selection highlights.
+
+    /**
+     * @brief Formatuje graficzną reprezentację karty (podświetlenie kursora/zaznaczenia).
+     */
     std::string formatCard(const SolCard& c, bool isCursor, bool isSelected, bool isStackSelected);
-    // Checks whether all foundations are complete.
+
+    /**
+     * @brief Sprawdza, czy wszystkie 4 stosy fundamentów są kompletne.
+     * @return true Jeśli gracz ułożył pasjansa.
+     */
     bool checkWin();
 
 public:
-    // Sets up the Solitaire game state and metadata.
+    /**
+     * @brief Konstruktor gry Solitaire.
+     */
     Solitaire();
-    // Runs the full Solitaire gameplay loop.
+
+    /**
+     * @brief Uruchamia rozgrywkę Pasjansa.
+     */
     void play() override;
 };
 

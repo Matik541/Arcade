@@ -141,6 +141,7 @@ void Bomberman::drawBoard() {
         }
         std::cout << "\n";
     }
+    Display::endFrame();
 }
 
 void Bomberman::play() {

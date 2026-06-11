@@ -185,6 +185,7 @@ void Game2048::drawBoard(bool gameOver) {
         std::cout << "\n";
     }
     std::cout << "\n";
+    Display::endFrame();
 }
 
 void Game2048::play() {
@@ -234,7 +235,9 @@ void Game2048::play() {
         if (size == 4 && db != nullptr) {
             std::cout << "Enter your name for the Scoreboard (no spaces): ";
             std::string playerName;
+            Display::showCursor();
             std::cin >> playerName;
+            Display::hideCursor();
             // The base game class already stores the score ordering rule.
             db->saveScore(name, playerName, score, isHigherScoreBetter()); 
             Display::printColored("Score Saved!\n\n", Color::GREEN);
