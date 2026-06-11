@@ -131,7 +131,7 @@ void Arcade::run() {
         
         if (input == ' ' || input == '\r' || input == '\n') {
             if (selected == games.size()) {
-                break; // Exit selected
+                break; // Exit the arcade.
             } else {
                 games[selected]->play();
             }
@@ -141,5 +141,3 @@ void Arcade::run() {
     Display::clearScreen();
     Display::printColored("Thanks for playing! Shutting down...\n", Color::CYAN);
 }
-
-// UUDDLRLRBA - add an easter egg if the user inputs this famous Konami Code sequence on the main menu (not in a game) - maybe it unlocks a secret game or just prints a fun message?

@@ -291,7 +291,7 @@ void TicTacToe::play() {
         };
 
         while (true) {
-            drawBoard(); // Redraw board so it doesn't flicker away
+            drawBoard(); // Keep the board visible while navigating the menu.
             
             // Re-print the win/draw message
             if (checkWin(board, currentPlayer)) {

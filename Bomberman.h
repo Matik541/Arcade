@@ -37,15 +37,23 @@ private:
     std::vector<Bomb> bombs;
     std::vector<Explosion> explosions;
 
+    // Generates a new map with walls, blocks, and safe spawn areas.
     void generateMap();
+    // Resets player state, bombs, and explosions for a fresh match.
     void resetGame();
+    // Detonates one bomb and handles blast propagation.
     void explodeBomb(int index);
+    // Returns true when a bomb already occupies the cell.
     bool hasBombAt(int x, int y);
+    // Returns true when an explosion is active on the cell.
     bool hasExplosionAt(int x, int y);
+    // Draws the match board and both players.
     void drawBoard();
 
 public:
+    // Sets up the Bomberman game state and metadata.
     Bomberman();
+    // Runs the full Bomberman match loop.
     void play() override;
 };
 

@@ -161,7 +161,6 @@ void MineSweeper::revealCell(int x, int y) {
     }
 }
 
-// NEW: Opens surrounding cells if flag count matches number
 bool MineSweeper::chordCell(int x, int y) {
     int flagCount = 0;
     for (int dy = -1; dy <= 1; dy++) {
@@ -173,21 +172,21 @@ bool MineSweeper::chordCell(int x, int y) {
         }
     }
 
-    // If flags match the number, reveal everything else
+    // When the flag count matches the number, open every safe neighbor.
     if (flagCount == board[y][x]) {
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 int ny = y + dy, nx = x + dx;
                 if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
                     if (!revealed[ny][nx] && cellState[ny][nx] != 1) {
-                        if (board[ny][nx] == -1) return false; // Hit a mine!
+                        if (board[ny][nx] == -1) return false; // Chording revealed a mine.
                         revealCell(nx, ny);
                     }
                 }
             }
         }
     }
-    return true; // Safe
+    return true;
 }
 
 bool MineSweeper::checkWin() {
@@ -280,7 +279,7 @@ void MineSweeper::play() {
             Display::printColored("YOU WIN! Cleared in " + std::to_string(timeTaken) + " seconds.\n\n", Color::GREEN);
             
             if (difficulty == 2 && db != nullptr) {
-                std::cout << "NEW RECORD! Enter your name (no spaces): ";
+                std::cout << "New record! Enter your name (no spaces): ";
                 std::string playerName;
                 std::cin >> playerName;
                 db->saveScore(name, playerName, timeTaken, isHigherScoreBetter());
@@ -290,7 +289,8 @@ void MineSweeper::play() {
         } else {
             Display::printColored("BOOM! You hit a mine. Game Over.\n\n", Color::RED);
         }
-// NEW INTERACTIVE MENU
+
+        // Post-game menu for replaying, changing setup, or leaving the mode.
         int endSel = 0;
         std::string endOpts[] = {
             "Play Again (Same Setup)",
@@ -298,7 +298,6 @@ void MineSweeper::play() {
             "Quit to Main Menu"
         };
 
-        // Note: We use a boolean flag so we only process the choice once
         bool madeChoice = false; 
         
         while (!madeChoice) {

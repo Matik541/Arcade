@@ -300,7 +300,7 @@ void Blackjack::play() {
             while((getchar()) != '\n'); 
         }
 
-        // NEW INTERACTIVE MENU
+        // Post-game menu for replaying, changing setup, or quitting.
         int endSel = 0;
         std::string endOpts[] = {
             "Play Again (Same Setup)",

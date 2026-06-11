@@ -106,7 +106,7 @@ void Snake::drawBoard(bool gameOver) {
             } else if (isSnake) {
                 Display::printColored("O ", gameOver ? Color::RED : Color::GREEN);
             } else if (x == foodX && y == foodY) {
-                Display::printColored("ó ", Color::RED); 
+                Display::printColored("O ", Color::RED); 
             } else {
                 std::cout << "  ";
             }
@@ -130,7 +130,7 @@ void Snake::play() {
 
         while (gameRunning) {
             
-            // 1. NON-BLOCKING INPUT
+            // Read buffered input before advancing the snake.
             if (hasInput()) {
                 int input = getInput();
                 
@@ -143,52 +143,50 @@ void Snake::play() {
                     }
                 }
                 
-                // Change direction (Prevent 180-degree instant death turns)
+                // Prevent instant 180-degree turns into the snake body.
                 if (input == 'W' && dirY != 1)  { dirX = 0;  dirY = -1; }
                 if (input == 'S' && dirY != -1) { dirX = 0;  dirY = 1; }
                 if (input == 'A' && dirX != 1)  { dirX = -1; dirY = 0; }
                 if (input == 'D' && dirX != -1) { dirX = 1;  dirY = 0; }
             }
 
-            // 2. MOVEMENT LOGIC
+            // Advance the snake one cell in the current direction.
             int newHeadX = snake.front().first + dirX;
             int newHeadY = snake.front().second + dirY;
 
-            // Check Wall Collisions
+            // Stop when the head leaves the playfield.
             if (newHeadX < 0 || newHeadX >= width || newHeadY < 0 || newHeadY >= height) {
                 gameRunning = false;
             }
 
-            // Check Self Collisions
+            // Stop when the head overlaps any body segment.
             for (size_t i = 0; i < snake.size(); i++) {
                 if (newHeadX == snake[i].first && newHeadY == snake[i].second) {
                     gameRunning = false;
                 }
             }
 
-            if (!gameRunning) break; // Break out before updating the head so we can draw the death state
+            if (!gameRunning) break; // Preserve the last frame for the game-over screen.
 
-            // Push new head
+            // Add the new head before handling food or tail movement.
             snake.push_front({newHeadX, newHeadY});
 
-            // Check Food Collision
+            // Grow the snake when food is eaten; otherwise remove the tail.
             if (newHeadX == foodX && newHeadY == foodY) {
                 score += 10;
                 spawnFood();
-                // Notice we DON'T pop_back here. This is how the snake grows!
             } else {
-                snake.pop_back(); // Remove tail if no food eaten
+                snake.pop_back();
             }
 
-            // 3. RENDER AND DELAY
+            // Render the updated state and keep the pace steady.
             drawBoard(false);
             
-            // The magic that makes it a real-time game
             std::this_thread::sleep_for(std::chrono::milliseconds(speedMs));
         }
 
-        // --- GAME OVER ---
-        drawBoard(true); // Draw red snake to show death
+        // Game-over screen.
+        drawBoard(true);
         Display::printColored("\nCRASH! Game Over.\n\n", Color::RED);
 
         if (isScored && db != nullptr && score > 0) {

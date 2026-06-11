@@ -28,22 +28,35 @@ private:
     std::vector<std::vector<SolCard>> foundations; // 4 piles
     std::vector<std::vector<SolCard>> tableau;     // 7 columns
 
+    // Builds the draw-mode selection menu.
     bool setupOptions();
+    // Shuffles a full deck into the stock pile.
     void buildAndShuffleDeck();
+    // Sets up a new Klondike layout.
     void resetBoard();
+    // Draws one or more cards from stock into waste.
     void drawCardsFromStock();
+    // Snaps the cursor to the first visible card in the current column.
     void snapCursorToRevealed();
+    // Reveals the top card of each tableau pile if needed.
     void autoReveal();
     
+    // Validates a move onto a tableau pile.
     bool isValidTableauMove(const SolCard& src, int targetCol);
+    // Validates a move onto a foundation pile.
     bool isValidFoundationMove(const SolCard& src, int fIndex);
     
+    // Draws the full solitaire table.
     void drawTable();
+    // Formats a card with cursor and selection highlights.
     std::string formatCard(const SolCard& c, bool isCursor, bool isSelected, bool isStackSelected);
+    // Checks whether all foundations are complete.
     bool checkWin();
 
 public:
+    // Sets up the Solitaire game state and metadata.
     Solitaire();
+    // Runs the full Solitaire gameplay loop.
     void play() override;
 };
 

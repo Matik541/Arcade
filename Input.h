@@ -6,7 +6,7 @@
 #if defined(_WIN32) || defined(_WIN64)
     #include <conio.h>
     
-    // Windows non-blocking check
+    // Polls Windows console input without blocking.
     inline bool hasInput() {
         return _kbhit() != 0;
     }
@@ -17,7 +17,7 @@
     #include <stdio.h>
     #include <fcntl.h>
 
-    // Linux/Codespaces non-blocking check
+    // Polls standard input without blocking on Linux and Codespaces.
     inline bool hasInput() {
         struct termios oldt, newt;
         int ch;
@@ -36,12 +36,13 @@
         fcntl(STDIN_FILENO, F_SETFL, oldf);
         
         if (ch != EOF) {
-            ungetc(ch, stdin); // Put it back so getInput() can read it
+            ungetc(ch, stdin); // Restore the byte so getInput() can consume it.
             return true;
         }
         return false;
     }
 
+    // Reads one character from stdin using raw terminal mode.
     inline int _getch() {
         struct termios oldattr, newattr;
         int ch;
@@ -55,6 +56,7 @@
     }
 #endif
 
+// Normalizes keyboard input into the arcade's WASD and action controls.
 inline int getInput() {
     int ch = _getch();
 

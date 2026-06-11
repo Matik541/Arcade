@@ -105,7 +105,7 @@ bool Game2048::move(int direction) {
     for (int i = 0; i < size; i++) {
         std::vector<int> line(size);
 
-        // 1. Extract the line depending on direction
+        // Extract the line in the direction of travel.
         for (int j = 0; j < size; j++) {
             if (direction == 0) line[j] = board[j][i];               // UP (Col top-to-bottom)
             else if (direction == 1) line[j] = board[size - 1 - j][i]; // DOWN (Col bottom-to-top)
@@ -113,10 +113,10 @@ bool Game2048::move(int direction) {
             else if (direction == 3) line[j] = board[i][size - 1 - j]; // RIGHT (Row right-to-left)
         }
 
-        // 2. Slide and Merge
+        // Slide and merge the extracted line.
         if (slideLine(line)) boardChanged = true;
 
-        // 3. Put the line back
+        // Write the transformed line back into the board.
         for (int j = 0; j < size; j++) {
             if (direction == 0) board[j][i] = line[j];
             else if (direction == 1) board[size - 1 - j][i] = line[j];
@@ -235,13 +235,14 @@ void Game2048::play() {
             std::cout << "Enter your name for the Scoreboard (no spaces): ";
             std::string playerName;
             std::cin >> playerName;
-            // Notice we pass true (higherScoreBetter) here because the Game class manages it
+            // The base game class already stores the score ordering rule.
             db->saveScore(name, playerName, score, isHigherScoreBetter()); 
             Display::printColored("Score Saved!\n\n", Color::GREEN);
             while((getchar()) != '\n'); 
         }
 
-// NEW INTERACTIVE MENU
+
+    // Post-game menu for replaying, changing setup, or quitting.
         int endSel = 0;
         std::string endOpts[] = {
             "Play Again (Same Setup)",

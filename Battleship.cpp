@@ -101,7 +101,7 @@ std::string Battleship::getShipPart(int x, int y, int startX, int startY, int le
         return "Ꮖ";
     } else {
         if (y == startY) return "Λ";
-        if (y == startY + length - 1) return "V"; // Lowercase v makes a great downward point
+        if (y == startY + length - 1) return "V";
         return "H";
     }
 }
