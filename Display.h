@@ -16,11 +16,8 @@ namespace Color {
 
 class Display {
 public:
-    // Clears the terminal and resets the cursor to the top-left corner.
     static void clearScreen();
-    // Prints colored text and restores the default terminal color.
     static void printColored(const std::string& text, const std::string& color);
-    // Draws a repeated line character for separators and borders.
     static void drawLine(int width, char c = '-');
 };
 

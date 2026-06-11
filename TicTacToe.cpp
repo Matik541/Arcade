@@ -17,7 +17,6 @@ void TicTacToe::resetBoard() {
 
 // 1. Fully Interactive Setup Menus
 bool TicTacToe::setupOptions() {
-    // --- MODE SELECTION ---
     int sel = 0;
     std::string modes[] = {"Player vs Player", "Player vs BOT"};
     
@@ -42,9 +41,7 @@ bool TicTacToe::setupOptions() {
         }
     }
 
-    // --- BOT SETTINGS ---
     if (vsBot) {
-        // Difficulty Selection
         sel = 0;
         std::string diffs[] = {"Easy (Random)", "Mid (Will block and win)", "Hard (Unbeatable)"};
         
@@ -64,12 +61,11 @@ bool TicTacToe::setupOptions() {
             if (input == 'W' && sel > 0) sel--;
             if (input == 'S' && sel < 2) sel++;
             if (input == ' ' || input == '\r' || input == '\n') {
-                botDifficulty = sel + 1; // 1=Easy, 2=Mid, 3=Hard
+                botDifficulty = sel + 1;
                 break;
             }
         }
 
-        // Play Order Selection
         sel = 0;
         std::string orders[] = {"First (X)", "Second (O)"};
         
@@ -153,7 +149,6 @@ bool TicTacToe::checkDraw(const std::vector<char>& b) {
     return true;
 }
 
-// --- AI LOGIC (Unchanged) ---
 int TicTacToe::getRandomMove() {
     std::vector<int> emptySpots;
     for (int i = 0; i < 9; i++) if (board[i] == ' ') emptySpots.push_back(i);
@@ -235,7 +230,6 @@ void TicTacToe::botMove() {
     if (chosenMove != -1) board[chosenMove] = botPiece;
 }
 
-// --- GAME LOOP ---
 void TicTacToe::play() {
     bool skipSetup = false;
 
@@ -282,7 +276,6 @@ void TicTacToe::play() {
             }
         }
 
-        // 2. Interactive Post-Game Menu
         int endSel = 0;
         std::string endOpts[] = {
             "Play Again (Same Settings)",
@@ -291,16 +284,14 @@ void TicTacToe::play() {
         };
 
         while (true) {
-            drawBoard(); // Keep the board visible while navigating the menu.
+            drawBoard();
             
-            // Re-print the win/draw message
             if (checkWin(board, currentPlayer)) {
                 Display::printColored("Player " + std::string(1, currentPlayer) + " WINS!\n\n", Color::GREEN);
             } else {
                 Display::printColored("It's a DRAW!\n\n", Color::YELLOW);
             }
 
-            // Print Interactive Menu
             for (int i = 0; i < 3; i++) {
                 if (i == endSel) Display::printColored("> " + endOpts[i] + "\n", Color::GREEN);
                 else std::cout << "  " << endOpts[i] << "\n";

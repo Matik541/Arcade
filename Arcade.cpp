@@ -4,7 +4,6 @@
 #include <iostream>
 #include <iomanip>
 
-// Include all games
 #include "TicTacToe.h"
 #include "MineSweeper.h"
 #include "Game2048.h"
@@ -16,10 +15,6 @@
 #include "CyberDefense.h"
 
 Arcade::Arcade() {
-    // Initialize Database
-    db = std::make_unique<Database>("scores.txt");
-
-    // Initialize all games and safely pass the database pointer to all of them
     auto ttt = std::make_shared<TicTacToe>(); 
     auto ms = std::make_shared<MineSweeper>(); 
     auto g2048 = std::make_shared<Game2048>(); 
@@ -30,13 +25,12 @@ Arcade::Arcade() {
     auto bomber = std::make_shared<Bomberman>(); 
     auto pvz = std::make_shared<CyberDefense>();
     
-    ms->setDatabase(db.get());
-    g2048->setDatabase(db.get());
-    bj->setDatabase(db.get());
-    snake->setDatabase(db.get());
-    bomber->setDatabase(db.get());
+    ms->setDatabase(&Database::getInstance());
+    g2048->setDatabase(&Database::getInstance());
+    bj->setDatabase(&Database::getInstance());
+    snake->setDatabase(&Database::getInstance());
+    bomber->setDatabase(&Database::getInstance());
 
-    // Push into unified list
     games.push_back(ttt);
     games.push_back(ms);
     games.push_back(g2048);
@@ -50,18 +44,29 @@ Arcade::Arcade() {
 
 void Arcade::drawMenu(int selected) {
     Display::clearScreen();
+
+    std::string colors[] = {Color::RED, Color::YELLOW, Color::GREEN, Color::CYAN, Color::BLUE, Color::MAGENTA};
+    std::string cBorder = Color::YELLOW;
+    std::string cTitle = Color::CYAN;
+    std::string cSelect = Color::GREEN;
+    std::string cScore = Color::MAGENTA;
+    std::string cExit = Color::RED;
+
+    if (rainbowMode) {
+        cBorder = colors[rand() % 6];
+        cTitle = colors[rand() % 6];
+        cSelect = colors[rand() % 6];
+    }
     
-    // ASCII Banner
-    Display::printColored("\n===============================================", Color::YELLOW);
-    Display::printColored("\n           T E R M I N A L   A R C A D E       ", Color::CYAN);
-    Display::printColored("\n===============================================\n", Color::YELLOW);
+    Display::printColored("\n===============================================", cBorder);
+    Display::printColored("\n           T E R M I N A L   A R C A D E       ", cTitle);
+    Display::printColored("\n===============================================\n", cBorder);
 
     std::cout << "  Select a game to play:\n\n";
 
-    // Draw unified game list
     for (size_t i = 0; i < games.size(); i++) {
         if ((int)i == selected) {
-            Display::printColored("  > [ " + games[i]->getName() + " ]\n", Color::GREEN);
+            Display::printColored("  > [ " + games[i]->getName() + " ]\n", cSelect);
         } else {
             std::cout << "      " << games[i]->getName() << "\n";
         }
@@ -69,24 +74,21 @@ void Arcade::drawMenu(int selected) {
 
     std::cout << "\n";
     
-    // Exit Button
     if (selected == games.size()) {
-        Display::printColored("  > [ Exit Arcade ]\n", Color::RED);
+        Display::printColored("  > [ Exit Arcade ]\n", cExit);
     } else {
         std::cout << "      Exit Arcade\n";
     }
 
-    // Dynamic Info & Scoreboard Box
-    Display::printColored("\n-----------------------------------------------\n", Color::YELLOW);
+    Display::printColored("\n-----------------------------------------------\n", cBorder);
     
     if (selected < games.size()) {
-        Display::printColored(" INFO: ", Color::CYAN);
+        Display::printColored(" INFO: ", cTitle);
         std::cout << games[selected]->getDescription() << "\n\n";
 
-        Display::printColored(" --- TOP 3 SCORES ---\n", Color::MAGENTA);
+        Display::printColored(" --- TOP 3 SCORES ---\n", cScore);
         
-        // Fetch Top Scores for the hovered game
-        auto topScores = db->getTopScores(games[selected]->getName(), games[selected]->isHigherScoreBetter(), 3);
+        auto topScores = Database::getInstance().getTopScores(games[selected]->getName(), games[selected]->isHigherScoreBetter(), 3);
         
         if (topScores.empty()) {
             std::cout << "  No records yet. Be the first!\n\n\n";
@@ -100,7 +102,6 @@ void Arcade::drawMenu(int selected) {
                     std::cout << std::setw(15) << "---" << " - " << "---";
                 }
                 
-                // Add seconds suffix if lower is better (like Minesweeper times)
                 if (!games[selected]->isHigherScoreBetter()) {
                     std::cout << " sec";
                 }
@@ -112,18 +113,27 @@ void Arcade::drawMenu(int selected) {
         std::cout << "Close the arcade and return to desktop.\n\n\n";
     }
 
-    Display::printColored("-----------------------------------------------\n", Color::YELLOW);
+    Display::printColored("-----------------------------------------------\n", cBorder);
     std::cout << "[W/S] Navigate | [SPACE/ENTER] Play | [Q] Quit\n> ";
 }
 
 void Arcade::run() {
     int selected = 0;
-    int totalOptions = games.size() + 1; // +1 for the Exit button at the bottom
+    int totalOptions = games.size() + 1;
 
     while (true) {
         drawMenu(selected);
 
         int input = getInput();
+
+        if (input >= 'A' && input <= 'Z') {
+            inputHistory += (char)input;
+            if (inputHistory.length() > 10) inputHistory.erase(0, 1);
+            if (inputHistory == "WWSSADADBA") {
+                rainbowMode = !rainbowMode; 
+                inputHistory = "";          
+            }
+        }
         
         if (input == 'Q') break;
         if (input == 'W' && selected > 0) selected--;
@@ -131,7 +141,7 @@ void Arcade::run() {
         
         if (input == ' ' || input == '\r' || input == '\n') {
             if (selected == games.size()) {
-                break; // Exit the arcade.
+                break;
             } else {
                 games[selected]->play();
             }
