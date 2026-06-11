@@ -1,3 +1,0 @@
-/workspaces/Arcade/build/CMakeFiles/TerminalArcade.dir
-/workspaces/Arcade/build/CMakeFiles/edit_cache.dir
-/workspaces/Arcade/build/CMakeFiles/rebuild_cache.dir

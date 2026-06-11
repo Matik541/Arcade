@@ -10,3 +10,5 @@ Snake,Matik,160
 Snake,Matik,90
 Snake,Matik,70
 Snake,Matik,50
+Snake,M,10
+Snake,,40
