@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <iostream>
 
-
 #include "Battleship.h"
 #include "Blackjack.h"
 #include "Bomberman.h"
@@ -15,8 +14,8 @@
 #include "Solitaire.h"
 #include "TicTacToe.h"
 
-
-Arcade::Arcade() {
+Arcade::Arcade()
+{
   auto ttt = std::make_shared<TicTacToe>();
   auto ms = std::make_shared<MineSweeper>();
   auto g2048 = std::make_shared<Game2048>();
@@ -50,18 +49,20 @@ Arcade::Arcade() {
  * games. If the rainbow mode is enabled, the colors will be randomized.
  * @param selected The index of the currently selected game.
  */
-void Arcade::drawMenu(int selected) {
+void Arcade::drawMenu(int selected)
+{
   Display::clearScreen();
 
-  std::string colors[] = {Color::RED,  Color::YELLOW, Color::GREEN,
-                          Color::CYAN, Color::BLUE,   Color::MAGENTA};
+  std::string colors[] = {Color::RED, Color::YELLOW, Color::GREEN,
+                          Color::CYAN, Color::BLUE, Color::MAGENTA};
   std::string cBorder = Color::YELLOW;
   std::string cTitle = Color::CYAN;
   std::string cSelect = Color::GREEN;
   std::string cScore = Color::MAGENTA;
   std::string cExit = Color::RED;
 
-  if (rainbowMode) {
+  if (rainbowMode)
+  {
     cBorder = colors[rand() % 6];
     cTitle = colors[rand() % 6];
     cSelect = colors[rand() % 6];
@@ -76,26 +77,33 @@ void Arcade::drawMenu(int selected) {
 
   std::cout << "  Select a game to play:\n\n";
 
-  for (size_t i = 0; i < games.size(); i++) {
-    if ((int)i == selected) {
+  for (size_t i = 0; i < games.size(); i++)
+  {
+    if ((int)i == selected)
+    {
       Display::printColored("  > [ " + games[i]->getName() + " ]\n", cSelect);
-    } else {
+    }
+    else
+    {
       std::cout << "      " << games[i]->getName() << "\n";
     }
   }
 
   std::cout << "\n";
 
-  if (selected == games.size()) {
+  if (selected == games.size())
+  {
     Display::printColored("  > [ Exit Arcade ]\n", cExit);
-  } else {
+  }
+  else
+  {
     std::cout << "      Exit Arcade\n";
   }
 
-  Display::printColored("\n-----------------------------------------------\n",
-                        cBorder);
+  Display::printColored("\n-----------------------------------------------\n", cBorder);
 
-  if (selected < games.size()) {
+  if (selected < games.size())
+  {
     Display::printColored(" INFO: ", cTitle);
     std::cout << games[selected]->getDescription() << "\n\n";
 
@@ -104,25 +112,35 @@ void Arcade::drawMenu(int selected) {
     auto topScores = Database::getInstance().getTopScores(
         games[selected]->getName(), games[selected]->isHigherScoreBetter(), 3);
 
-    if (topScores.empty()) {
+    if (topScores.empty())
+    {
       std::cout << "  No records yet. Be the first!\n\n\n";
-    } else {
-      for (size_t i = 0; i < 3; i++) {
+    }
+    else
+    {
+      for (size_t i = 0; i < 3; i++)
+      {
         std::cout << "  " << (i + 1) << ". " << std::left;
-        if (i < topScores.size()) {
+        if (i < topScores.size())
+        {
           std::cout << std::setw(15) << topScores[i].playerName << " - "
                     << topScores[i].score;
-        } else {
+        }
+        else
+        {
           std::cout << std::setw(15) << "---" << " - " << "---";
         }
 
-        if (!games[selected]->isHigherScoreBetter()) {
+        if (!games[selected]->isHigherScoreBetter())
+        {
           std::cout << " sec";
         }
         std::cout << "\n";
       }
     }
-  } else {
+  }
+  else
+  {
     Display::printColored(" INFO: ", Color::RED);
     std::cout << "Close the arcade and return to desktop.\n\n\n";
   }
@@ -133,20 +151,24 @@ void Arcade::drawMenu(int selected) {
   Display::endFrame();
 }
 
-void Arcade::run() {
+void Arcade::run()
+{
   int selected = 0;
   int totalOptions = games.size() + 1;
 
-  while (true) {
+  while (true)
+  {
     drawMenu(selected);
 
     int input = getInput();
 
-    if (input >= 'A' && input <= 'Z') {
+    if (input >= 'A' && input <= 'Z')
+    {
       inputHistory += (char)input;
       if (inputHistory.length() > 10)
         inputHistory.erase(0, 1);
-      if (inputHistory == "WWSSADADBA") {
+      if (inputHistory == "WWSSADADBA")
+      {
         rainbowMode = !rainbowMode;
         inputHistory = "";
       }
@@ -159,10 +181,14 @@ void Arcade::run() {
     if (input == 'S' && selected < totalOptions - 1)
       selected++;
 
-    if (input == ' ' || input == '\r' || input == '\n') {
-      if (selected == games.size()) {
+    if (input == ' ' || input == '\r' || input == '\n')
+    {
+      if (selected == games.size())
+      {
         break;
-      } else {
+      }
+      else
+      {
         games[selected]->play();
       }
     }
