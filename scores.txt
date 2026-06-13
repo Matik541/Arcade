@@ -37,3 +37,4 @@ Snake,q,0
 Snake,q,30
 Snake,q,0
 Snake,,10
+Snake,damian,70
