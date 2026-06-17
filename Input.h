@@ -3,6 +3,10 @@
 
 #include <ctype.h>
 #include <iostream>
+#include <string>
+#include <limits>
+#include <sstream>
+#include <algorithm>
 #include "Display.h"
 
 /**
@@ -102,6 +106,82 @@ inline int getInput() {
         return 27; // ESC
     }
     return toupper(ch);
+}
+
+/**
+ * @brief Pobiera bezpiecznie nazwe gracza ze standardowego wejscia.
+ * @details Ignoruje puste linie, zabrania spacji i przecinkow (format CSV bazy).
+ * @return Zweryfikowana nazwa gracza jako std::string.
+ */
+inline std::string getValidPlayerName() {
+    std::string name;
+    std::cin.clear();
+    while (true) {
+        if (!std::getline(std::cin, name)) {
+            std::cin.clear();
+            std::cout << "Blad odczytu. Wprowadz nazwe ponownie: ";
+            continue;
+        }
+        // Trim skrajnych spacji i nowych linii
+        size_t start = name.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos) {
+            std::cout << "Nazwa nie moze byc pusta. Wprowadz nazwe: ";
+            continue;
+        }
+        size_t end = name.find_last_not_of(" \t\r\n");
+        name = name.substr(start, end - start + 1);
+
+        if (name.find(' ') != std::string::npos) {
+            std::cout << "Nazwa nie moze zawierac spacji. Wprowadz nazwe: ";
+            continue;
+        }
+        if (name.find(',') != std::string::npos) {
+            std::cout << "Nazwa nie moze zawierac przecinkow. Wprowadz nazwe: ";
+            continue;
+        }
+        break;
+    }
+    return name;
+}
+
+/**
+ * @brief Pobiera bezpiecznie liczbe calkowita z okreslonego przedzialu.
+ * @details Odporna na znaki nieliczbowe i puste wejscia.
+ * @param minVal Wartosc minimalna (wlacznie).
+ * @param maxVal Wartosc maksymalna (wlacznie).
+ * @param prompt Komunikat zachety.
+ * @return Zweryfikowana liczba calkowita.
+ */
+inline int getValidInteger(int minVal, int maxVal, const std::string& prompt) {
+    int val;
+    std::string inputStr;
+    while (true) {
+        std::cout << prompt;
+        std::cin.clear();
+        if (!std::getline(std::cin, inputStr)) {
+            std::cin.clear();
+            continue;
+        }
+        // Usuniecie skrajnych znakow niedrukowalnych
+        size_t start = inputStr.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos) {
+            std::cout << "Wpisz liczbe.\n";
+            continue;
+        }
+        size_t end = inputStr.find_last_not_of(" \t\r\n");
+        inputStr = inputStr.substr(start, end - start + 1);
+
+        try {
+            size_t pos;
+            val = std::stoi(inputStr, &pos);
+            if (pos == inputStr.length() && val >= minVal && val <= maxVal) {
+                break;
+            }
+        } catch (...) {
+        }
+        std::cout << "Niepoprawna wartosc. Wpisz liczbe calkowita od " << minVal << " do " << maxVal << ".\n";
+    }
+    return val;
 }
 
 #endif

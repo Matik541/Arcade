@@ -22,6 +22,7 @@ struct Card {
  */
 class Blackjack : public Game {
 private:
+    friend void runArcadeTests();
     std::vector<Card> deck;       ///< Talia kart używana w bieżącej rundzie.
     std::vector<Card> playerHand; ///< Ręka gracza.
     std::vector<Card> dealerHand; ///< Ręka krupiera.
@@ -49,7 +50,7 @@ private:
      * @return Sumaryczna wartość punktowa ręki.
      */
     int getHandValue(const std::vector<Card>& hand);
-    
+
     /**
      * @brief Konfiguruje początkowe opcje gry (np. budżet początkowy).
      * @return true Jeśli wybrano parametry pomyślnie, false w przypadku wyjścia.

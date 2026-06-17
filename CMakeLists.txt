@@ -17,5 +17,7 @@ file(GLOB SOURCES "*.cpp")
 add_executable(TerminalArcade ${SOURCES})
 
 if(MSVC)
-    add_compile_options(/utf-8)
+    add_compile_options(/utf-8 /W4)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
 endif()

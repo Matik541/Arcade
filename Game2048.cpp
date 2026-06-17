@@ -234,14 +234,12 @@ void Game2048::play() {
         // Post-game Score Save
         if (size == 4 && db != nullptr) {
             std::cout << "Enter your name for the Scoreboard (no spaces): ";
-            std::string playerName;
             Display::showCursor();
-            std::cin >> playerName;
+            std::string playerName = getValidPlayerName();
             Display::hideCursor();
             // The base game class already stores the score ordering rule.
             db->saveScore(name, playerName, score, isHigherScoreBetter()); 
             Display::printColored("Score Saved!\n\n", Color::GREEN);
-            while((getchar()) != '\n'); 
         }
 
 

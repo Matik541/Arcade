@@ -294,13 +294,11 @@ void Blackjack::play() {
         // Save Score
         if (isScored && db != nullptr && bankroll > startingBankroll) {
             std::cout << "You made a profit! Enter your name for the Scoreboard: ";
-            std::string playerName;
             Display::showCursor();
-            std::cin >> playerName;
+            std::string playerName = getValidPlayerName();
             Display::hideCursor();
             db->saveScore(name, playerName, bankroll, isHigherScoreBetter());
             Display::printColored("Score Saved!\n\n", Color::GREEN);
-            while((getchar()) != '\n'); 
         }
 
         // Post-game menu for replaying, changing setup, or quitting.

@@ -11,6 +11,7 @@
  */
 class Game2048 : public Game {
 private:
+    friend void runArcadeTests();
     int size;                            ///< Rozmiar planszy (zazwyczaj 4x4).
     std::vector<std::vector<int>> board; ///< Macierz reprezentująca kafelki na planszy.
     int score;                           ///< Bieżący wynik gracza.

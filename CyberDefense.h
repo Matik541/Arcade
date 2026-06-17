@@ -44,6 +44,7 @@ struct Projectile {
  */
 class CyberDefense : public Game {
 private:
+    friend void runArcadeTests();
     int width = 15;        ///< Szerokość planszy obrony.
     int height = 5;        ///< Wysokość planszy (liczba linii/ścieżek).
     int bits;              ///< Zgromadzone bity (waluta gry).

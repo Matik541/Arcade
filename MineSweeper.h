@@ -12,6 +12,7 @@
  */
 class MineSweeper : public Game {
 private:
+    friend void runArcadeTests();
     int width, height, numMines;  ///< Wymiary planszy i liczba min.
     int cursorX, cursorY;         ///< Aktualne współrzędne kursora.
     int difficulty;               ///< Wybrany poziom trudności (1-4).

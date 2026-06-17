@@ -40,6 +40,12 @@ public:
         static Database instance("scores.txt");
         return instance;
     }
+
+    /**
+     * @brief Ustawia nazwe pliku bazy danych (glownie do celow testowych).
+     * @param file Nowa nazwa pliku.
+     */
+    void setFilenameForTest(const std::string& file) { filename = file; }
     
     /**
      * @brief Zapisuje wynik do pliku.

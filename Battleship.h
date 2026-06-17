@@ -25,6 +25,7 @@ struct ShipData {
  */
 class Battleship : public Game {
 private:
+    friend void runArcadeTests();
     int botDifficulty;         ///< Poziom trudności bota (1 - losowy, 2 - polujący na trafienia).
     bool manualPlacement;       ///< Czy gracz wybrał ręczne rozmieszczanie statków.
     int pCursorX, pCursorY;    ///< Koordynaty kursora celownika gracza.

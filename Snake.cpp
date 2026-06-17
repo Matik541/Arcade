@@ -192,13 +192,11 @@ void Snake::play() {
 
         if (isScored && db != nullptr && score > 0) {
             std::cout << "Enter your name for the Scoreboard (no spaces): ";
-            std::string playerName;
             Display::showCursor();
-            std::cin >> playerName;
+            std::string playerName = getValidPlayerName();
             Display::hideCursor();
             db->saveScore(name, playerName, score, isHigherScoreBetter());
             Display::printColored("Score Saved!\n\n", Color::GREEN);
-            while((getchar()) != '\n'); 
         }
 
         // --- INTERACTIVE END MENU ---
