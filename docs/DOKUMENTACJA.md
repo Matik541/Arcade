@@ -107,3 +107,4 @@ Podczas realizacji projektu ściśle przestrzegano wytycznych:
 1. **Tryb sieciowy (Multiplayer)**: Wykorzystanie biblioteki gniazd sieciowych (np. ASIO) do rozbudowy gry Bomberman lub Statki do rozgrywki przez sieć lokalną.
 2. **Dodanie efektów dźwiękowych**: Integracja prostej biblioteki audio (np. FMOD lub SoLoud) do odtwarzania 8-bitowych efektów dźwiękowych w grach.
 3. **Zapis stanu gry**: Rozbudowa bazy danych o możliwość zapisu stanu pasjansa lub trwającej kampanii w Cyber Defense.
+4. **Dodanie kolejnych gier**: Rozbudowa o nowe klasyczne gry, np. Tetris, Arkanoid czy Pac-man.
