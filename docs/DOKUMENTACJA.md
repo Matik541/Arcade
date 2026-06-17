@@ -19,16 +19,16 @@
 Aplikacja została zaprojektowana zgodnie z paradygmatami programowania zorientowanego obiektowo (OOP):
 
 1. **Dziedziczenie i Polimorfizm**:
-   - Stworzono abstrakcyjną klasę bazową `Game` ([Game.h](file:///f:/Projects/ConsoleArcade/Game.h)), która definiuje interfejs dla każdej gry (wirtualna metoda `play()`, pobieranie nazwy, opisu oraz konfiguracja zapisu wyników).
+   - Stworzono abstrakcyjną klasę bazową `Game`, która definiuje interfejs dla każdej gry (wirtualna metoda `play()`, pobieranie nazwy, opisu oraz konfiguracja zapisu wyników).
    - Każda z dziewięciu gier (np. `TicTacToe`, `MineSweeper`, `Solitaire`) dziedziczy po klasie `Game` i dostarcza własną, specyficzną implementację logiki rozgrywki oraz rysowania planszy.
    - Menu główne `Arcade` zarządza kolekcją gier poprzez wektor inteligentnych wskaźników typu `std::vector<std::shared_ptr<Game>>`, realizując wywołania polimorficzne w czasie wykonywania programu.
 
 2. **Wzorce Projektowe**:
-   - **Singleton**: Klasa `Database` ([Database.h](file:///f:/Projects/ConsoleArcade/Database.h)) reprezentująca plikową bazę danych wyników (`scores.txt`) została zaimplementowana przy użyciu wzorca Singleton. Gwarantuje to jedyny, globalny punkt dostępu do operacji zapisu i odczytu wyników z dowolnego miejsca w aplikacji.
+   - **Singleton**: Klasa `Database` reprezentująca plikową bazę danych wyników (`scores.txt`) została zaimplementowana przy użyciu wzorca Singleton. Gwarantuje to jedyny, globalny punkt dostępu do operacji zapisu i odczytu wyników z dowolnego miejsca w aplikacji.
 
 3. **Separacja Logiki i Prezentacji**:
-   - Wydzielono klasę `Display` ([Display.h](file:///f:/Projects/ConsoleArcade/Display.h)), która odpowiada wyłącznie za renderowanie kolorowych znaków ANSI oraz stabilizację obrazu.
-   - Wydzielono moduł `Input` ([Input.h](file:///f:/Projects/ConsoleArcade/Input.h)), który w sposób przenośny (zależny od systemu operacyjnego Windows/POSIX) odczytuje klawisze w trybie nieblokującym.
+   - Wydzielono klasę `Display`, która odpowiada wyłącznie za renderowanie kolorowych znaków ANSI oraz stabilizację obrazu.
+   - Wydzielono moduł `Input`, który w sposób przenośny (zależny od systemu operacyjnego Windows/POSIX) odczytuje klawisze w trybie nieblokującym.
 
 ---
 

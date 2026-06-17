@@ -3,9 +3,9 @@
 Witaj w **Terminal Arcade** — kompaktowym zbiorze dziewięciu klasycznych i zręcznościowych gier, napisanych w nowoczesnym, zorientowanym obiektowo języku C++ i grywalnych bezpośrednio w terminalu. 
 
 ## 👥 Autorzy projektu 👥
-* **Mateusz Kowalski** (Sekcja: )
-* **Paweł Kowolik** (Sekcja: )
-* **Damian Feter** (Sekcja: )
+* **Mateusz Kowalski**
+* **Paweł Kowolik**
+* **Damian Feter** 
 
 ## 🌟 Główne Funkcje 🌟
 * **Interaktywne Menu**: Nawiguj po grach i menu za pomocą klawiszy `W/A/S/D` lub strzałek — bez konieczności wpisywania cyfr.
@@ -37,6 +37,12 @@ Lub uruchom wszystko jedną komendą:
 
 ```bash
 cmake -B build && cmake --build build && ./build/TerminalArcade
+```
+
+### Alternatywny build na Windows bez CMake
+
+```bash
+g++ *.cpp -o ./build/TerminalArcade.exe
 ```
 
 ## ⌨️ Sterowanie (Instrukcja Użytkownika) ⌨️
