@@ -107,42 +107,49 @@ void Arcade::drawMenu(int selected)
     Display::printColored(" INFO: ", cTitle);
     std::cout << games[selected]->getDescription() << "\n\n";
 
-    Display::printColored(" --- TOP 3 SCORES ---\n", cScore);
-
-    auto topScores = Database::getInstance().getTopScores(
-        games[selected]->getName(), games[selected]->isHigherScoreBetter(), 3);
-
-    if (topScores.empty())
+    if (games[selected]->usesScoreboard())
     {
-      std::cout << "  No records yet. Be the first!\n\n\n";
+      Display::printColored(" --- TOP 3 SCORES ---\n", cScore);
+
+      auto topScores = Database::getInstance().getTopScores(
+          games[selected]->getName(), games[selected]->isHigherScoreBetter(), 3);
+
+      if (topScores.empty())
+      {
+        std::cout << "  No records yet. Be the first!\n\n\n";
+      }
+      else
+      {
+        for (size_t i = 0; i < 3; i++)
+        {
+          std::cout << "  " << (i + 1) << ". " << std::left;
+          if (i < topScores.size())
+          {
+            std::cout << std::setw(15) << topScores[i].playerName << " - "
+                      << topScores[i].score;
+          }
+          else
+          {
+            std::cout << std::setw(15) << "---" << " - " << "---";
+          }
+
+          if (!games[selected]->isHigherScoreBetter())
+          {
+            std::cout << " sec";
+          }
+          std::cout << "\n";
+        }
+      }
     }
     else
     {
-      for (size_t i = 0; i < 3; i++)
-      {
-        std::cout << "  " << (i + 1) << ". " << std::left;
-        if (i < topScores.size())
-        {
-          std::cout << std::setw(15) << topScores[i].playerName << " - "
-                    << topScores[i].score;
-        }
-        else
-        {
-          std::cout << std::setw(15) << "---" << " - " << "---";
-        }
-
-        if (!games[selected]->isHigherScoreBetter())
-        {
-          std::cout << " sec";
-        }
-        std::cout << "\n";
-      }
+      std::cout << "\n\n\n\n";
     }
   }
   else
   {
     Display::printColored(" INFO: ", Color::RED);
-    std::cout << "Close the arcade and return to desktop.\n\n\n";
+    std::cout << "Close the arcade and return to desktop.\n\n\n\n\n";
   }
 
   Display::printColored("-----------------------------------------------\n",

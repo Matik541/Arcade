@@ -197,8 +197,8 @@ void Battleship::drawBoards() {
     Display::printColored("=== BATTLESHIP ===\n\n", Color::YELLOW);
     
     Display::printColored(
-                    "   YOUR OCEAN MAP               \t    ENEMY OCEAN RADAR            \n", Color::CYAN);
-    std::cout <<    "   A  B  C  D  E  F  G  H  I  J \t    A  B  C  D  E  F  G  H  I  J \n";
+                    "   YOUR OCEAN MAP                           ENEMY OCEAN RADAR\n", Color::CYAN);
+    std::cout <<    "   A  B  C  D  E  F  G  H  I  J             A  B  C  D  E  F  G  H  I  J \n";
 
     for (int y = 0; y < 10; y++) {
         // --- DRAW PLAYER BOARD (Left) ---
@@ -220,7 +220,7 @@ void Battleship::drawBoards() {
             std::cout << " ";
         }
 
-        std::cout << " \t " << y << " ";
+        std::cout << "         " << y << " ";
 
         // --- DRAW BOT BOARD (Right) ---
         for (int x = 0; x < 10; x++) {
@@ -241,6 +241,60 @@ void Battleship::drawBoards() {
 
             if (x == pCursorX && y == pCursorY) Display::printColored("]", Color::CYAN);
             else std::cout << " ";
+        }
+        std::cout << "\n";
+    }
+
+    std::cout << "\n";
+    Display::printColored("   YOUR FLEET STATUS                        ENEMY FLEET STATUS\n", Color::CYAN);
+
+    for (int i = 0; i < 5; i++) {
+        // Player ship status
+        std::string pLabel = pShips[i].name + ":";
+        while (pLabel.length() < 12) pLabel += " ";
+        std::cout << "   " << pLabel;
+
+        int pLen = pShips[i].length;
+        for (int j = 0; j < pLen; j++) {
+            if (j > 0) std::cout << " ";
+            std::string sym = (j == 0) ? "<" : ((j == pLen - 1) ? ">" : "Ꮖ");
+            if (pShips[i].sunk) {
+                Display::printColored(sym, Color::RED);
+            } else {
+                int x = pShips[i].horizontal ? pShips[i].startX + j : pShips[i].startX;
+                int y = pShips[i].horizontal ? pShips[i].startY : pShips[i].startY + j;
+                if (playerState[y][x] == 2) {
+                    Display::printColored("X", Color::RED);
+                } else {
+                    std::cout << sym;
+                }
+            }
+        }
+
+        // Pad player column to 32 characters
+        int charsPrinted = 3 + 12 + (2 * pLen - 1);
+        int padSpaces = 32 - charsPrinted;
+        for (int s = 0; s < padSpaces; s++) {
+            std::cout << " ";
+        }
+
+        // Column gap (12 spaces)
+        std::cout << "            ";
+
+        // Enemy ship status
+        std::string eLabel = bShips[i].name + ":";
+        while (eLabel.length() < 12) eLabel += " ";
+        std::cout << eLabel;
+
+        int bLen = bShips[i].length;
+        for (int j = 0; j < bLen; j++) {
+            if (j > 0) std::cout << " ";
+            std::string sym = (j == 0) ? "<" : ((j == bLen - 1) ? ">" : "Ꮖ");
+            if (bShips[i].sunk) {
+                Display::printColored(sym, Color::RED);
+            } else {
+                std::cout << sym;
+            }
         }
         std::cout << "\n";
     }

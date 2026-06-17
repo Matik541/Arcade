@@ -166,7 +166,7 @@ void Solitaire::drawTable() {
         bool isSel = (selArea == 2 && selX == i);
         
         if (foundations[i].empty()) {
-            std::string emptyStr = "[  " + std::string("♥♦♣♠").substr(i*3, 3) + "  ]"; // UTF-8 suits are 3 bytes
+            std::string emptyStr = "[  " + std::string("♥♦♣♠").substr(i*3, 3) + "   ]"; // UTF-8 suits are 3 bytes
             std::cout << (isCursor ? Color::GREEN + emptyStr + Color::RESET : emptyStr) << "  ";
         } else {
             std::cout << formatCard(foundations[i].back(), isCursor, isSel, false) << "  ";

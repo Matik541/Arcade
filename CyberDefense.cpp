@@ -198,8 +198,8 @@ void CyberDefense::drawBoard() {
                 for (const auto& t : towers) {
                     if (t.x == x && t.y == y) {
                         if (t.type == 1) Display::printColored("$", Color::GREEN);
-                        else if (t.type == 2) Display::printColored("►", Color::CYAN);
-                        else if (t.type == 3) Display::printColored("█", Color::MAGENTA);
+                        else if (t.type == 2) Display::printColored(">", Color::CYAN);
+                        else if (t.type == 3) Display::printColored("#", Color::MAGENTA);
                         cellFilled = true; break;
                     }
                 }

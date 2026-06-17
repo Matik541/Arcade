@@ -122,12 +122,7 @@ void TicTacToe::drawBoard() {
         // Linia 1: Górna część komórki (zaznaczenie kursora)
         std::cout << "  ";
         for (int x = 0; x < 3; x++) {
-            std::cout << "|";
-            if (x == cursorX && y == cursorY) {
-                Display::printColored(".......", Color::CYAN);
-            } else {
-                std::cout << "       ";
-            }
+            std::cout << "|       ";
         }
         std::cout << "|\n";
 
@@ -138,7 +133,7 @@ void TicTacToe::drawBoard() {
             bool isCursor = (x == cursorX && y == cursorY);
             char piece = board[y * 3 + x];
             if (isCursor) {
-                Display::printColored(".  ", Color::CYAN);
+                Display::printColored(" [ ", Color::CYAN);
                 if (piece == 'X') {
                     Display::printColored("X", Color::RED);
                 } else if (piece == 'O') {
@@ -146,7 +141,7 @@ void TicTacToe::drawBoard() {
                 } else {
                     std::cout << " ";
                 }
-                Display::printColored("  .", Color::CYAN);
+                Display::printColored(" ] ", Color::CYAN);
             } else {
                 if (piece == 'X') {
                     std::cout << "   ";
@@ -166,12 +161,7 @@ void TicTacToe::drawBoard() {
         // Linia 3: Dolna część komórki (zaznaczenie kursora)
         std::cout << "  ";
         for (int x = 0; x < 3; x++) {
-            std::cout << "|";
-            if (x == cursorX && y == cursorY) {
-                Display::printColored(".......", Color::CYAN);
-            } else {
-                std::cout << "       ";
-            }
+            std::cout << "|       ";
         }
         std::cout << "|\n";
     }
